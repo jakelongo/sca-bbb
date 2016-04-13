@@ -1,26 +1,21 @@
 Experiment `playground' for conducting side-channel research on
-the RaspberryPi 3 platform.
+the BeagleboneBlack platform.
 
 # Build
 
-First things first, get all the stuff running on the Pi. Clone the repo:
+We are using Debian Wheezey throughout, however, any version running on
+the BBB should work just the same.
+
+First things first, get all the stuff running on the BBB. Clone the repo:
 
 ```bash
-git clone https://github.com/jakelongo/sca-pi3.git
+git clone https://github.com/jakelongo/sca-bbb.git
 ```
 
-Pull in OpenSSL, WolfSSL and WiringPi:
+Pull in OpenSSL:
 
 ```bash
 git submodule update --init
-```
-
-Build and install WiringPi:
-
-```bash
-cd WiringPi
-./build
-cd ..
 ```
 
 Build and install dependencies for wolfSSL:
@@ -59,30 +54,10 @@ sudo make install_sw
 
 ---
 
-# Test Plan
-
-
-### Single-core analysis
-
-Single core analysis models a *best case* scenario for an adversary where the
-DUT is not is not running any other user process. The target process affinity
-shall be fixed to a single core via the OS scheduler and the remaining cores
-clocked down to limit interference.
-
-Files `single_core`
-
-
----
-
 Contents of this repo are as follows:
 
 * openssl/ - OpenSSL 1.0.1s @57ac73f from
   https://github.com/openssl/openssl.git
-
-* wiringPi/ - WiringPi from https://github.com/WiringPi/WiringPi.git the
-  authors personal git was timing out
-
-* featureTest/ - tests for implemented ARMv8 SoC features on both aarch32|64
 
 * openssl.patch - changes to the openssl source to aid in the SCA signal
   exploration phase
