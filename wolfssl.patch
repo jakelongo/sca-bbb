@@ -147,7 +147,7 @@
          /* Initialize crypto for use with TLS connection */
          if (wolfCrypt_Init() != 0) {
 --- ./wolfssl/wolfcrypt/src/aes.c	2016-04-14 10:57:53.000000000 +0100
-+++ ./wolfssl/wolfcrypt/src/aes.c_diff	2016-04-14 16:57:18.000000000 +0100
++++ ./wolfssl/wolfcrypt/src/aes.c_diff	2016-04-14 17:00:25.000000000 +0100
 @@ -26,6 +26,10 @@
  
  #include <wolfssl/wolfcrypt/settings.h>
@@ -215,8 +215,8 @@
  #endif /* HAVE_AES_DECRYPT */
  #endif /* HAVE_AES_CBC || WOLFSSL_AES_DIRECT */
 --- ./wolfssl/wolfssl/wolfcrypt/trigger.h	1970-01-01 01:00:00.000000000 +0100
-+++ ./wolfssl/wolfssl/wolfcrypt/trigger.h_diff	2016-04-14 13:14:37.000000000 +0100
-@@ -0,0 +1,7 @@
++++ ./wolfssl/wolfssl/wolfcrypt/trigger.h_diff	2016-04-14 17:01:01.000000000 +0100
+@@ -0,0 +1,10 @@
 +// trigger header file
 +
 +int trigger_map(void);
@@ -224,4 +224,7 @@
 +int trigger_setup(void);
 +int trigger_set(void);
 +int trigger_clr(void);
++
++extern uint32_t *trigger_gpioBase;
++extern uint8_t   trigger_active;
 \ No newline at end of file
