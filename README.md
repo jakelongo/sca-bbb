@@ -86,3 +86,5 @@ Contents of this repo are as follows:
   exploration phase
 
 * generatePatch.sh - generates the openssl.patch and wolfssl.patch files (only for completeness)
+
+* exportGPIO.sh - GPIO export script to allow for fast GPIO switching
