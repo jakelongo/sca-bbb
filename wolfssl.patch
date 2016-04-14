@@ -1,0 +1,52 @@
+--- ./wolfssl//wolfcrypt/src/aes.c	2016-04-14 10:57:53.000000000 +0100
++++ ./wolfssl//wolfcrypt/src/aes.c_diff	2016-04-14 11:11:44.000000000 +0100
+@@ -1247,6 +1247,11 @@
+     }
+ #endif
+ 
++    #ifdef AES_TRIG
++    // trigger set
++    trigger_set();
++    #endif /* AES_TRIG */
++
+     /*
+      * map byte array block to cipher state
+      * and add initial round key:
+@@ -1371,6 +1376,12 @@
+     XMEMCPY(outBlock + sizeof(s0),     &s1, sizeof(s1));
+     XMEMCPY(outBlock + 2 * sizeof(s0), &s2, sizeof(s2));
+     XMEMCPY(outBlock + 3 * sizeof(s0), &s3, sizeof(s3));
++
++    #ifdef AES_TRIG
++    // clear trigger signal
++    trigger_clr();
++    #endif /* AES_TRIG */
++
+ }
+ #endif /* HAVE_AES_CBC || WOLFSSL_AES_DIRECT || HAVE_AESGCM */
+ 
+@@ -1411,6 +1422,11 @@
+     }
+ #endif
+ 
++    #ifdef AES_TRIG
++    // trigger set
++    trigger_set();
++    #endif /* AES_TRIG */
++
+     /*
+      * map byte array block to cipher state
+      * and add initial round key:
+@@ -1533,6 +1549,12 @@
+     XMEMCPY(outBlock + sizeof(s0),     &s1, sizeof(s1));
+     XMEMCPY(outBlock + 2 * sizeof(s0), &s2, sizeof(s2));
+     XMEMCPY(outBlock + 3 * sizeof(s0), &s3, sizeof(s3));
++
++    #ifdef AES_TRIG
++    // trigger set
++    trigger_clr();
++    #endif /* AES_TRIG */
++
+ }
+ #endif /* HAVE_AES_DECRYPT */
+ #endif /* HAVE_AES_CBC || WOLFSSL_AES_DIRECT */
