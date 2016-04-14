@@ -17,7 +17,7 @@ Initialise all target implementation submodules:
 git submodule update --init
 ```
 
-## OpenSSL
+## OpenSSL target
 
 Patch OpenSSL with optionsl build flags below:
 
@@ -41,7 +41,7 @@ sudo make install_sw
 |            | -DAES_TRIG  | Trigger placed around each AES enc/dec call. |
 
 
-## wolfSSL
+## wolfSSL target
 
 Build and install dependencies for wolfSSL:
 ```bash
@@ -76,6 +76,8 @@ Contents of this repo are as follows:
 
 * wolfSSL/ - wolfSSL @master from
   https://github.com/wolfssl/wolfssl.git
+
+* trigger/ - trigger implementation source code
 
 * openssl.patch - changes to the openssl source to aid in the SCA signal
   exploration phase
