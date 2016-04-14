@@ -39,7 +39,7 @@ patch -p0 < openssl.patch
 Build OpenSSL and optionally set flags from the build table below:
 ```bash
 cd openssl
-./build [lib] [defs]
+./config [lib] [defs]
 make depend
 make
 sudo make install_sw
@@ -49,7 +49,7 @@ sudo make install_sw
 
 |  lib       |  defs       |                     Notes                    |
 |:----------:|:-----------:|:--------------------------------------------:|
-| -lwiringPi | -DAES_TRIG  | Trigger placed around each AES enc/dec call. |
+|            | -DAES_TRIG  | Trigger placed around each AES enc/dec call. |
 
 
 ---
