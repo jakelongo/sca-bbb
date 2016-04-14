@@ -1,5 +1,5 @@
---- ./openssl//crypto/aes/asm/aes-armv4.pl	2016-04-14 10:20:37.000000000 +0100
-+++ ./openssl//crypto/aes/asm/aes-armv4.pl_diff	2016-04-13 17:17:51.000000000 +0100
+--- ./openssl/crypto/aes/asm/aes-armv4.pl	2016-04-14 10:20:37.000000000 +0100
++++ ./openssl/crypto/aes/asm/aes-armv4.pl_diff	2016-04-13 17:17:51.000000000 +0100
 @@ -52,6 +52,12 @@
  
  $code=<<___;
@@ -77,8 +77,8 @@
  #if __ARM_ARCH__>=5
  	ldmia	sp!,{r4-r12,pc}
  #else
---- ./openssl//crypto/conf/conf.h	2016-04-14 10:20:37.000000000 +0100
-+++ ./openssl//crypto/conf/conf.h_diff	2016-04-13 17:09:29.000000000 +0100
+--- ./openssl/crypto/conf/conf.h	2016-04-14 10:20:37.000000000 +0100
++++ ./openssl/crypto/conf/conf.h_diff	2016-04-13 17:09:29.000000000 +0100
 @@ -71,6 +71,14 @@
  extern "C" {
  #endif
@@ -94,8 +94,8 @@
  typedef struct {
      char *section;
      char *name;
---- ./openssl//crypto/conf/conf_lib.c	2016-04-14 10:20:37.000000000 +0100
-+++ ./openssl//crypto/conf/conf_lib.c_diff	2016-04-14 10:18:41.000000000 +0100
+--- ./openssl/crypto/conf/conf_lib.c	2016-04-14 10:20:37.000000000 +0100
++++ ./openssl/crypto/conf/conf_lib.c_diff	2016-04-14 10:18:41.000000000 +0100
 @@ -64,6 +64,114 @@
  #include <openssl/conf_api.h>
  #include <openssl/lhash.h>
