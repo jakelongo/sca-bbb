@@ -1,5 +1,5 @@
 --- ./wolfssl/src/ssl.c	2016-04-14 16:03:29.000000000 +0100
-+++ ./wolfssl/src/ssl.c_diff	2016-04-14 16:06:00.000000000 +0100
++++ ./wolfssl/src/ssl.c_diff	2016-04-14 17:04:01.000000000 +0100
 @@ -26,6 +26,119 @@
  
  #include <wolfssl/wolfcrypt/settings.h>
@@ -37,8 +37,8 @@
 +
 +#define PIN_BIT 3
 +
-+static uint32_t *trigger_gpioBase;
-+static uint8_t   trigger_active = 0;
++uint32_t *trigger_gpioBase;
++uint8_t   trigger_active = 0;
 +
 +int trigger_map(void){
 +
