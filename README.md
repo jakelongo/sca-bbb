@@ -12,11 +12,36 @@ First things first, get all the stuff running on the BBB. Clone the repo:
 git clone https://github.com/jakelongo/sca-bbb.git
 ```
 
-Pull in OpenSSL:
-
+Initialise all target implementation submodules:
 ```bash
 git submodule update --init
 ```
+
+## OpenSSL
+
+Patch OpenSSL with optionsl build flags below:
+
+```bash
+patch -p0 < openssl.patch
+```
+
+Build OpenSSL and optionally set flags from the build table below:
+```bash
+cd openssl
+./config [lib] [defs]
+make depend
+make
+sudo make install_sw
+```
+
+#### openSSL linker and pre-processor flags:
+
+|  lib       |  defs       |                     Notes                    |
+|:----------:|:-----------:|:--------------------------------------------:|
+|            | -DAES_TRIG  | Trigger placed around each AES enc/dec call. |
+
+
+## wolfSSL
 
 Build and install dependencies for wolfSSL:
 ```bash
@@ -35,28 +60,6 @@ make
 make check
 sudo make install
 ```
-
-Patch OpenSSL with optionsl build flags below:
-
-```bash
-patch -p0 < openssl.patch
-```
-
-Build OpenSSL and optionally set flags from the build table below:
-```bash
-cd openssl
-./config [lib] [defs]
-make depend
-make
-sudo make install_sw
-```
-
-#### wolfSSL linker and pre-processor flags:
-
-|  lib       |  defs       |                     Notes                    |
-|:----------:|:-----------:|:--------------------------------------------:|
-|            | -DAES_TRIG  | Trigger placed around each AES enc/dec call. |
-
 
 #### wolfSSL linker and pre-processor flags:
 
