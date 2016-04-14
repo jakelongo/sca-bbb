@@ -23,14 +23,20 @@ Build and install dependencies for wolfSSL:
 sudo apt-get install autoconf automake libtool
 ```
 
-Build wolfSSL:
+Patch wolfSSL with optionsl build flags below:
 ```bash
-./configure
-make
-make check
+patch -p0 < wolfssl.patch
 ```
 
-Patch OpenSSL:
+Build wolfSSL:
+```bash
+./configure CPPFLAGS=[defs] LDFLAGS=[lib]
+make
+make check
+sudo make install
+```
+
+Patch OpenSSL with optionsl build flags below:
 
 ```bash
 patch -p0 < openssl.patch
@@ -45,12 +51,18 @@ make
 sudo make install_sw
 ```
 
-#### OpenSSL linker and pre-processor flags:
+#### wolfSSL linker and pre-processor flags:
 
 |  lib       |  defs       |                     Notes                    |
 |:----------:|:-----------:|:--------------------------------------------:|
 |            | -DAES_TRIG  | Trigger placed around each AES enc/dec call. |
 
+
+#### wolfSSL linker and pre-processor flags:
+
+|  lib       |  defs       |                     Notes                    |
+|:----------:|:-----------:|:--------------------------------------------:|
+|            | -DAES_TRIG  | Trigger placed around each AES enc/dec call. |
 
 ---
 
@@ -59,7 +71,13 @@ Contents of this repo are as follows:
 * openssl/ - OpenSSL 1.0.1s @57ac73f from
   https://github.com/openssl/openssl.git
 
+* wolfSSL/ - wolfSSL @master from
+  https://github.com/wolfssl/wolfssl.git
+
 * openssl.patch - changes to the openssl source to aid in the SCA signal
   exploration phase
 
-* generatePatch.sh - generates the openssl.patch file (only for setup purposes)
+* wolf.patch - changes to the wolfssl source to aid in the SCA signal
+  exploration phase
+
+* generatePatch.sh - generates the openssl.patch and wolfssl.patch files (only for completeness)
