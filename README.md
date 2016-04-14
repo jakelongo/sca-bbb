@@ -19,7 +19,7 @@ git submodule update --init
 
 ## OpenSSL target
 
-Patch OpenSSL with optionsl build flags below:
+Patch OpenSSL with optional build flags below:
 
 ```bash
 patch -p0 < openssl.patch
@@ -48,7 +48,7 @@ Build and install dependencies for wolfSSL:
 sudo apt-get install autoconf automake libtool
 ```
 
-Patch wolfSSL with optionsl build flags below:
+Patch wolfSSL with optional build flags below:
 ```bash
 patch -p0 < wolfssl.patch
 ```
@@ -60,6 +60,16 @@ make
 make check
 sudo make install
 ```
+
+To link against wolfSSL you need to add *-lwolfssl* the install path to the
+shared library path before the runtime can load it. Under the default install
+path:
+
+```bash
+export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
+```
+
+-lwolfssl
 
 #### wolfSSL linker and pre-processor flags:
 
