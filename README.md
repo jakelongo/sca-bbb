@@ -61,15 +61,12 @@ make check
 sudo make install
 ```
 
-To link against wolfSSL you need to add *-lwolfssl* the install path to the
-shared library path before the runtime can load it. Under the default install
-path:
+To link against wolfSSL you need to compile with **-lwolfssl** and export the
+shared library path for the runtime loading. Under the default install path:
 
 ```bash
 export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
 ```
-
--lwolfssl
 
 #### wolfSSL linker and pre-processor flags:
 
