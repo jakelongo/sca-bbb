@@ -54,7 +54,7 @@ int trigger_map(void){
     trigger_gpioBase = (uint32_t*)mmap(0, MMAP_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, memfd, GPIO2_BASE);
 
     // check for any problems
-    if (gpioBase == MAP_FAILED){
+    if (trigger_gpioBase == MAP_FAILED){
         close(memfd);
         perror("initMap : mmap to gpio base failed");
         return -1;
@@ -71,7 +71,7 @@ int trigger_unmap(void){
   if (trigger_active) {
     // unmap the memory and clear the global flag
     munmap(trigger_gpioBase, MMAP_SIZE);
-    mapActive = 0;
+    trigger_active = 0;
     return 1;
 
   } else {
