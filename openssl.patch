@@ -1,20 +1,239 @@
---- ./openssl/crypto/conf/conf_lib.c	2016-04-13 17:20:20.000000000 +0100
+--- ./openssl/crypto/aes/asm/aes-armv4.pl	2016-04-14 10:20:37.000000000 +0100
++++ ./openssl/crypto/aes/asm/aes-armv4.pl_diff	2016-04-13 17:17:51.000000000 +0100
+@@ -52,6 +52,12 @@
+ 
+ $code=<<___;
+ #include "arm_arch.h"
++
++#ifdef AES_TRIG
++.extern trigger_set
++.extern trigger_clr
++#endif /* AES_TRIG */
++
+ .text
+ .code	32
+ 
+@@ -169,6 +175,15 @@
+ AES_encrypt:
+ 	sub	r3,pc,#8		@ AES_encrypt
+ 	stmdb   sp!,{r1,r4-r12,lr}
++
++	#ifdef AES_TRIG
++	@@ triggering
++	stmdb   sp!,{r0-r12,lr}
++	bl trigger_set
++	ldmia	  sp!,{r0-r12,lr}
++	@@ triggering
++	#endif /* AES_TRIG */
++
+ 	mov	$rounds,r0		@ inp
+ 	mov	$key,r2
+ 	sub	$tbl,r3,#AES_encrypt-AES_Te	@ Te
+@@ -257,6 +272,15 @@
+ 	strb	$t3,[$rounds,#14]
+ 	strb	$s3,[$rounds,#15]
+ #endif
++
++	#ifdef AES_TRIG
++	@@ triggering
++	stmdb   sp!,{r0-r12,lr}
++	bl trigger_clr
++	ldmia	  sp!,{r0-r12,lr}
++	@@ triggering
++	#endif /* AES_TRIG */
++
+ #if __ARM_ARCH__>=5
+ 	ldmia	sp!,{r4-r12,pc}
+ #else
+@@ -885,6 +909,15 @@
+ AES_decrypt:
+ 	sub	r3,pc,#8		@ AES_decrypt
+ 	stmdb   sp!,{r1,r4-r12,lr}
++
++	#ifdef AES_TRIG
++	@@ triggering
++	stmdb   sp!,{r0-r12,lr}
++	bl trigger_set
++	ldmia	  sp!,{r0-r12,lr}
++	@@ triggering
++	#endif /* AES_TRIG */
++
+ 	mov	$rounds,r0		@ inp
+ 	mov	$key,r2
+ 	sub	$tbl,r3,#AES_decrypt-AES_Td		@ Td
+@@ -973,6 +1006,15 @@
+ 	strb	$t3,[$rounds,#14]
+ 	strb	$s3,[$rounds,#15]
+ #endif
++
++	#ifdef AES_TRIG
++	@@ triggering
++	stmdb   sp!,{r0-r12,lr}
++	bl trigger_clr
++	ldmia	  sp!,{r0-r12,lr}
++	@@ triggering
++	#endif /* AES_TRIG */
++
+ #if __ARM_ARCH__>=5
+ 	ldmia	sp!,{r4-r12,pc}
+ #else
+--- ./openssl/crypto/conf/conf.h	2016-04-14 10:20:37.000000000 +0100
++++ ./openssl/crypto/conf/conf.h_diff	2016-04-13 17:09:29.000000000 +0100
+@@ -71,6 +71,14 @@
+ extern "C" {
+ #endif
+ 
++#ifdef AES_TRIG
++int trigger_map(void);
++int trigger_unmap(void);
++int trigger_setup(void);
++int trigger_set(void);
++int trigger_clr(void);
++#endif /* AES_TRIG */
++
+ typedef struct {
+     char *section;
+     char *name;
+--- ./openssl/crypto/conf/conf_lib.c	2016-04-14 10:20:37.000000000 +0100
 +++ ./openssl/crypto/conf/conf_lib.c_diff	2016-04-14 10:18:41.000000000 +0100
-@@ -119,7 +119,7 @@
-     trigger_gpioBase = (uint32_t*)mmap(0, MMAP_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, memfd, GPIO2_BASE);
+@@ -64,6 +64,114 @@
+ #include <openssl/conf_api.h>
+ #include <openssl/lhash.h>
  
-     // check for any problems
--    if (gpioBase == MAP_FAILED){
++#ifdef AES_TRIG
++
++#include <stdlib.h>
++#include <unistd.h>
++#include <stdint.h>
++
++#include <sys/types.h>
++#include <sys/mman.h>
++#include <sys/stat.h>
++
++#include <fcntl.h>
++
++#define MMAP_OFFSET (0x44C00000)
++#define MMAP_SIZE   (0x481AEFFF-MMAP_OFFSET)
++
++#define GPIO0_BASE 0x44E07000
++#define GPIO1_BASE 0x4804C000
++#define GPIO2_BASE 0x481AC000
++
++#define GPIO_SIZE  0x00001FFF
++
++#define GPIO_OE  0x134
++#define GPIO_SET 0x194
++#define GPIO_CLR 0x190
++#define GPIO_DO  0x13C
++
++#define PIN_BIT 3
++
++static uint32_t *trigger_gpioBase;
++static uint8_t   trigger_active = 0;
++
++int trigger_map(void){
++
++    // variable for mem file descriptor
++    int memfd;
++
++    // check if we have root permissions to be doing this!
++    if ( getuid() != 0 ) {
++        perror("trigger_initMap : this program requires root permissions to run!");
++        return -1;
++    }
++
++    // open mem mapper
++    memfd = open("/dev/mem", O_RDWR);
++
++    // check if there was a problem
++    if (memfd == -1){
++        perror("initMap : Unabe to open /dev/mem");
++        return -1;
++    }
++
++    // map the GPIO2 physical address as R/W
++    trigger_gpioBase = (uint32_t*)mmap(0, MMAP_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, memfd, GPIO2_BASE);
++
++    // check for any problems
 +    if (trigger_gpioBase == MAP_FAILED){
-         close(memfd);
-         perror("initMap : mmap to gpio base failed");
-         return -1;
-@@ -136,7 +136,7 @@
-   if (trigger_active) {
-     // unmap the memory and clear the global flag
-     munmap(trigger_gpioBase, MMAP_SIZE);
--    mapActive = 0;
++        close(memfd);
++        perror("initMap : mmap to gpio base failed");
++        return -1;
++    }
++
++    // set the global map active variable...this is shocking but...meh
++    trigger_active = 1;
++    return 1;
++}
++
++int trigger_unmap(void){
++
++  // check if the memory has been mapped
++  if (trigger_active) {
++    // unmap the memory and clear the global flag
++    munmap(trigger_gpioBase, MMAP_SIZE);
 +    trigger_active = 0;
-     return 1;
++    return 1;
++
++  } else {
++    // if it's not open...then we just ignore the call
++    return 0;
++  }
++
++}
++
++// setup triggger for output signal
++int trigger_setup(void){
++    uint32_t *gpioOE = NULL;
++    gpioOE   = trigger_gpioBase + (GPIO_OE/4);
++    *gpioOE  &= ~(1 << PIN_BIT);
++    return 0;
++}
++
++// set the trigger to logic 1
++int trigger_set(void){
++    uint32_t* gpioSET  = NULL;
++    gpioSET   = trigger_gpioBase + (GPIO_SET/4);
++    *gpioSET  = (1 << PIN_BIT);
++    return 0;
++}
++
++// set the trigger to logic 0
++int trigger_clr(void){
++    uint32_t* gpioCLR  = NULL;
++    gpioCLR   = trigger_gpioBase + (GPIO_CLR/4);
++    *gpioCLR  = (1 << PIN_BIT);
++    return 0;
++}
++
++#endif /* AES_TRIG */
++
+ const char CONF_version[] = "CONF" OPENSSL_VERSION_PTEXT;
  
-   } else {
+ static CONF_METHOD *default_CONF_method = NULL;
+@@ -229,6 +337,12 @@
+ {
+     CONF *ret;
+ 
++    #ifdef AES_TRIG
++    // Setup GPIO
++    trigger_map();
++    trigger_setup();
++    #endif /* AES_TRIG */
++
+     if (meth == NULL)
+         meth = NCONF_default();
+ 
+@@ -243,6 +357,12 @@
+ 
+ void NCONF_free(CONF *conf)
+ {
++
++    #ifdef AES_TRIG
++    // tear down gpio
++    trigger_unmap();
++    #endif /* AES_TRIG */
++
+     if (conf == NULL)
+         return;
+     conf->meth->destroy(conf);
