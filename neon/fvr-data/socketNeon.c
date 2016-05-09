@@ -65,7 +65,7 @@ uint32_t getData(int sessionfd, char* dest, uint32_t maxBuffer)
 
   #ifdef DEBUG
   printf("Payload length = %d\n", streamLength.data);
-  #endif /* DEBUG *
+  #endif /* DEBUG */
 
   if (streamLength.data > maxBuffer)
   {
