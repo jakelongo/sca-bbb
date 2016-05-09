@@ -31,7 +31,7 @@
 #define DATABUFFSIZE 4096*16*sizeof(uint8_t)
 
 #define BANK_SIZE   4
-#define BANK_WIDTH  4
+#define BANK_WIDTH  8
 // #define DEBUG
 
 // Dreaded globals!
