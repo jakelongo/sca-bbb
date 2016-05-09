@@ -2,24 +2,26 @@
 .arm
 .fpu neon
 
-#define MAKE_FN_NAME(x) void  neonExecute_## x
-#define FUNCTION_NAME(y) MAKE_FN_NAME(y)
-#define UFUNCTION_NAME(y) _ ## MAKE_FN_NAME(y)
+#define MAKE_FN_NAME(x,y) neonExecute_## x ## y
+#define FUNCTION_NAME(x,y) MAKE_FN_NAME(x,y)
 
-.global UFUNCTION_NAME(INSTR)
-.global FUNCTION_NAME(INSTR)
+#define UMAKE_FN_NAME(x,y) _neonExecute_## x ## y
+#define UFUNCTION_NAME(x,y) _ ## UMAKE_FN_NAME(x,y)
 
-.type   UFUNCTION_NAME(INSTR),%function
-.type   FUNCTION_NAME(INSTR),%function
+.global UFUNCTION_NAME(INSTR,WORD)
+.global FUNCTION_NAME(INSTR,WORD)
+
+.type   UFUNCTION_NAME(INSTR,WORD),%function
+.type   FUNCTION_NAME(INSTR,WORD),%function
 
 .extern setTrigger(void)
 .extern clrTrigger(void)
 
 .align 8
 
-@ FUNCTION_NAME(INSTR)(uint8_t** memBank, uint32_t opIndex); 
-FUNCTION_NAME(INSTR):
-UFUNCTION_NAME(INSTR):
+@ FUNCTION_NAME(INSTR,WORD)(uint8_t** memBank);
+FUNCTION_NAME(INSTR,WORD):
+UFUNCTION_NAME(INSTR,WORD):
   stmdb   sp!,{r4-r12,lr}
 
   /* Get some variables in place and return var */
@@ -49,8 +51,8 @@ UFUNCTION_NAME(INSTR):
   .endr
 
   .rept 1
-  INSTR     d0, d1, d2
-  veor.u32  d0, d3, d4
+  INSTR.WORD d0, d1, d2
+  veor.u32   d0, d3, d4
   .endr
 
   bl clrTrigger
@@ -76,5 +78,5 @@ UFUNCTION_NAME(INSTR):
 
   ldmia   sp!,{r4-r12,pc}
 
-.size UFUNCTION_NAME(INSTR),.-UFUNCTION_NAME(INSTR)
-.size FUNCTION_NAME(INSTR),.-FUNCTION_NAME(INSTR)
+.size UFUNCTION_NAME(INSTR,WORD),.-UFUNCTION_NAME(INSTR,WORD)
+.size FUNCTION_NAME(INSTR,WORD),.-FUNCTION_NAME(INSTR,WORD)
