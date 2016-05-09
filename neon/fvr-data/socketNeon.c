@@ -326,7 +326,7 @@ int main(int argc, char *argv[])
   }
 
   #ifdef DEBUG
-  printf('starting server on socket: %d\n', socketNumber);
+  printf('starting server on socket: %d\n', &socketNumber);
   #endif /* DEBUG */
 
   // Set up socket first
