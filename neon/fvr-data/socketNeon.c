@@ -325,6 +325,10 @@ int main(int argc, char *argv[])
     socketNumber = atoi(argv[1]);
   }
 
+  #ifdef DEBUG
+  printf('starting server on socket: %d\n', socketNumber);
+  #endif /* DEBUG */
+
   // Set up socket first
   struct sockaddr_in serv_addr;
 
@@ -345,8 +349,16 @@ int main(int argc, char *argv[])
   while (1) {
     sessionfd = accept(listenfd, (struct sockaddr*)NULL, NULL);
 
+    #ifdef DEBUG
+    printf('client connected!\n');
+    #endif /* DEBUG */
+
     /* End of Socket Setup */
     commandHandler(sessionfd);
+
+    #ifdef DEBUG
+    printf('closing connection!\n');
+    #endif /* DEBUG */
 
     sleep(1);
   }
