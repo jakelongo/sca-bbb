@@ -191,8 +191,8 @@ void commandHandler(int sessionfd)
         #ifdef DEBUG
         for (int wordCntr = 0; wordCntr < (scratchVariable/BANK_WIDTH); ++wordCntr) {
           printf("Write membank[%d] = ", memBankIndex+wordCntr);
-          for (cntr = 0 ; cntr < BANK_WIDTH; ++i) {
-            printf("%02X", memBank[memBankIndex+wordCntr][i]);
+          for (cntr = 0 ; cntr < BANK_WIDTH; ++cntr) {
+            printf("%02X", memBank[memBankIndex+wordCntr][cntr]);
           }
           printf("\n");
         }
@@ -223,8 +223,8 @@ void commandHandler(int sessionfd)
 
         #ifdef DEBUG
         printf("Read membank[%d] = ", memBankIndex);
-        for (cntr = 0 ; cntr < BANK_WIDTH; ++i) {
-          printf("%02X", memBank[memBankIndex][i]);
+        for (cntr = 0 ; cntr < BANK_WIDTH; ++cntr) {
+          printf("%02X", memBank[memBankIndex][cntr]);
         }
         printf("\n");
         #endif /* DEBUG */
@@ -284,8 +284,8 @@ void commandHandler(int sessionfd)
         cntr = 0;
         printf("Done\n");
         printf("Read membank[0] = ");
-        for (cntr = 0 ; cntr < BANK_WIDTH; ++i) {
-          printf("%02X", memBank[0][i]);
+        for (cntr = 0 ; cntr < BANK_WIDTH; ++cntr) {
+          printf("%02X", memBank[0][cntr]);
         }
         printf("\n");
         #endif /* DEBUG */
