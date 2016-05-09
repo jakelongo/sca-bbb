@@ -1,0 +1,3 @@
+Experiments to better understand the behaviour of the side-channel leakage emanating form the ARM NEON accelerator.
+
+These experiments are *meant* to be a rigorous characterisation of the NEON engine but rather than indicative.
