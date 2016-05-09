@@ -1,13 +1,14 @@
 SOURCES ?= socketNeon.c trigger.c
-INSTRS  ?= eor.o add.o mul.o sub.o cmp.o
+OBJS    ?= eor.o add.o mul.o sub.o cmp.o
 
-all: $(INSTRS)
-	gcc -mfpu=neon socketNeon.c trigger.c $(INSTRS) -o nodebug.out
-	gcc -mfpu=neon socketNeon.c trigger.c $(INSTRS) -DDEBUG -o debug.out
-	gcc -mfpu=neon socketNeon.c trigger.c $(INSTRS) -g	 -o GDBdebug.out
+
+all: $(patsubst %.o,%,$(OBJS))
+	gcc -mfpu=neon socketNeon.c trigger.c $(OBJS) -o nodebug.out
+	gcc -mfpu=neon socketNeon.c trigger.c $(OBJS) -DDEBUG -o debug.out
+	gcc -mfpu=neon socketNeon.c trigger.c $(OBJS) -g	 -o GDBdebug.out
 
 # Recipes for compiling pre-built assembly objs
-%.o: neonExecute_INSTR.S
+%: neonExecute_INSTR.S
 	gcc -mfpu=neon $< -D INSTR=veor -D WORD=u32 -c -o neonExecute_$@
 
 
