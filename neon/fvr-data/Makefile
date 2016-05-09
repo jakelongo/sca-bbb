@@ -12,7 +12,7 @@ all: $(patsubst %.o,%,$(OBJS))
 	gcc -mfpu=neon $< -D INSTR=$@ -D WORD=u32 -c -o $@.o
 
 clean:
-	rm *.out
-	rm *.o
+	rm -f *.out
+	rm -f *.o
 
 .PHONY: all makefile
