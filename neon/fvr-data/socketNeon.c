@@ -263,36 +263,11 @@ void commandHandler(int sessionfd)
       case 'e':
 
         // Check which bank
-        memBankIndex = 0;
-        cntr = 0;
-        while (cntr < 1) {
-          cntr += read(sessionfd, (char*) &memBankIndex, 1 - cntr);
-        }
-
         #ifdef DEBUG
-          printf("Performing Operation...");
+          printf("Performing Operation...\n");
         #endif /* DEBUG */
 
         (*opFunction)((uint8_t**)memBank);
-
-        #ifdef DEBUG
-        printf("Read bank index received, membank[%d]\n", memBankIndex);
-        #endif /* DEBUG */
-
-        if (memBankIndex > (BANK_SIZE-1)) {
-          printf("Invalid bank index: %d", memBankIndex);
-          return;
-        }
-
-        #ifdef DEBUG
-        cntr = 0;
-        printf("Done\n");
-        printf("Read membank[0] = ");
-        for (cntr = 0 ; cntr < BANK_WIDTH; ++cntr) {
-          printf("%02X", memBank[0][cntr]);
-        }
-        printf("\n");
-        #endif /* DEBUG */
 
         break;
 

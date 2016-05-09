@@ -161,10 +161,13 @@ def neonOp(args):
   targetObject.write('o')
 
   # Send payload length
-  targetObject.write(binascii.unhexlify("%08X" % (len(args) + 1))[::-1])
+  targetObject.write(binascii.unhexlify("%08X" % (len(args)))[::-1])
 
   # set the string
-  targetObject.write(args + r'\0')
+  targetObject.write(args)
+
+  # send EO transmission character
+  targetObject.write('\n')
 
   #terminate
   targetObject.flush()
@@ -216,17 +219,27 @@ class test_neon(unittest.TestCase):
     ret = ret and neonClose('')
     self.assertEqual(returnVariable, 'DEADBEEFDEADC0DE')
 
-  def test_neonexec(self):
+  def test_neonsetop(self):
     global returnVariable
     ret = neonOpen('10.70.25.143 8081')
-    ret = ret and neonSet('3 DEADBEEFDEADC0DE')
-    ret = ret and neonGet('3')
+    ret = ret and neonOp('vmul')
     ret = ret and neonClose('')
-    self.assertEqual(returnVariable, 'DEADBEEFDEADC0DE')
+    self.assertTrue(ret)
+
+  def test_neonexec(self):
+    global returnVariable
+    vecs = add_vector(32)
+
+    ret = neonOpen('10.70.25.143 8081')
+    ret = ret and neonSet('3 ' + vecs[0])
+    ret = ret and neonSet('4 ' + vecs[1])
+    ret = ret and neonOp('vadd')
+    ret = ret and neonExec('')
+    ret = ret and neonGet('2')
+    ret = ret and neonClose('')
+    self.assertEqual(returnVariable, vecs[2])
 
 if __name__ == '__main__':
-  # unittest.main(verbosity=2)
-  a = add_vector(32)
-  print a
+  unittest.main(verbosity=2)
 
 
