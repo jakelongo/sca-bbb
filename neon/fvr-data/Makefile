@@ -1,18 +1,16 @@
 SOURCES ?= socketNeon.c trigger.c
 OBJS    ?= veor.o vadd.o vmul.o vsub.o vceq.o
 
+.PHONY: all clean
 
-all: $(patsubst %.o,%,$(OBJS))
+all: $(OBJS)
 	gcc -mfpu=neon -std=c99 $(SOURCES) $(OBJS)         -o    nodebug.out
 	gcc -mfpu=neon -std=c99 $(SOURCES) $(OBJS) -DDEBUG -o    debug.out
 	gcc -mfpu=neon -std=c99 $(SOURCES) $(OBJS) -DDEBUG -g -o gdb_debug.out
 
-# Recipes for compiling pre-built assembly objs
-%: neonExecute_INSTR.S
-	gcc -mfpu=neon $< -D INSTR=$@ -D WORD=u32 -c -o $@.o
+v%.o: neonExecute_INSTR.S
+	gcc -mfpu=neon $< -D INSTR=$(basename $@) -D WORD=u32 -c -o $@
 
 clean:
 	rm -f *.out
 	rm -f *.o
-
-.PHONY: all makefile
