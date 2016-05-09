@@ -30,7 +30,7 @@
 
 #define DATABUFFSIZE 4096*16*sizeof(uint8_t)
 
-#define BANK_SIZE   4
+#define BANK_SIZE   8
 #define BANK_WIDTH  8
 // #define DEBUG
 
@@ -197,13 +197,9 @@ void commandHandler(int sessionfd)
         scratchVariable = getData(sessionfd, memBank[memBankIndex], (BANK_WIDTH*BANK_SIZE)-(BANK_WIDTH*memBankIndex));
 
         #ifdef DEBUG
-        for (int wordCntr = 0; wordCntr < (scratchVariable/BANK_WIDTH); ++wordCntr) {
-          printf("Write membank[%d] = ", memBankIndex+wordCntr);
-          for (cntr = 0 ; cntr < BANK_WIDTH; ++cntr) {
-            printf("%02X", memBank[memBankIndex+wordCntr][cntr]);
-          }
-          printf("\n");
-        }
+        printf("Write membank[%d] = ", memBankIndex);
+        printMemory(scratchVariable, memBank[memBankIndex]);
+        printf("\n");
         #endif /* DEBUG */
 
         break;
