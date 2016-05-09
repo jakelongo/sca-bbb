@@ -63,8 +63,8 @@ UFUNCTION_NAME(INSTR,WORD):
   mov r1, r1
   .endr
 
-  vld1.u8 {d0}, [r4]!; /* load memBank[0] */
-  vld1.u8 {d1}, [r4]!; /* load memBank[0] */
+  vst1.u8 {d0}, [r5]!; /* load memBank[0] */
+  vst1.u8 {d1}, [r5]!; /* load memBank[0] */
   vst1.u8 {d2}, [r5]!; /* load memBank[0] */
   vst1.u8 {d3}, [r5]!; /* load memBank[1] */
   vst1.u8 {d4}, [r5]!; /* load memBank[2] */
