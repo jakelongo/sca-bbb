@@ -155,8 +155,8 @@ void commandHandler(int sessionfd)
   printf("Initialising GPIO\n");
   #endif /* DEBUG */
 
-  initMap();
-  setupTrigger();
+  trigger_init();
+  trigger_setup();
 
   while(!closeServer)
   {
@@ -310,7 +310,7 @@ void commandHandler(int sessionfd)
 
   }
 
-  closeMap();
+  trigger_close();
   close(sessionfd);
 
 }

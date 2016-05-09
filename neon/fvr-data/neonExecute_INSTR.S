@@ -14,8 +14,8 @@
 .type   UFUNCTION_NAME(INSTR,WORD),%function
 .type   FUNCTION_NAME(INSTR,WORD),%function
 
-.extern setTrigger(void)
-.extern clrTrigger(void)
+.extern trigger_set(void)
+.extern trigger_clr(void)
 
 .align 8
 
@@ -44,7 +44,7 @@ UFUNCTION_NAME(INSTR,WORD):
   vld1.u8 {d12}, [r4]!; /* load memBank[10] */
   vld1.u8 {d13}, [r4]!; /* load memBank[11] */
 
-  bl setTrigger
+  bl trigger_set
 
   .rept 1000
   mov r1, r1
@@ -55,7 +55,7 @@ UFUNCTION_NAME(INSTR,WORD):
   veor.u32   d0, d3, d4
   .endr
 
-  bl clrTrigger
+  bl trigger_clr
 
   .rept 3000
   mov r1, r1
