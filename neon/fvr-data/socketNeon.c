@@ -326,7 +326,7 @@ int main(int argc, char *argv[])
   }
 
   #ifdef DEBUG
-  printf('starting server on socket: %d\n', &socketNumber);
+  printf("starting server on socket: %d\n", socketNumber);
   #endif /* DEBUG */
 
   // Set up socket first
@@ -350,14 +350,14 @@ int main(int argc, char *argv[])
     sessionfd = accept(listenfd, (struct sockaddr*)NULL, NULL);
 
     #ifdef DEBUG
-    printf('client connected!\n');
+    printf("client connected!\n");
     #endif /* DEBUG */
 
     /* End of Socket Setup */
     commandHandler(sessionfd);
 
     #ifdef DEBUG
-    printf('closing connection!\n');
+    printf("closing connection!\n");
     #endif /* DEBUG */
 
     sleep(1);
