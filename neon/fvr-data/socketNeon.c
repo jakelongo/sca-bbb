@@ -86,7 +86,7 @@ uint32_t getData(int sessionfd, char* dest, uint32_t maxBuffer)
 
   #ifdef DEBUG
   printf("Payload received: ");
-  printMemory(byteCounter, dest)
+  printMemory(byteCounter, dest);
   printf("\n");
   #endif /* DEBUG */
 
