@@ -47,7 +47,7 @@ void intHandler(int var)
   printf("SIGINT : Closing down session\n");
   close(sessionfd);
   close(listenfd);
-  closeMap();
+  trigger_close();
   exit(-1);
 }
 
