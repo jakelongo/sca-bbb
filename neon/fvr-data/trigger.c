@@ -12,7 +12,7 @@
 
 #include <fcntl.h>
 
-#include "trigger.c"
+#include "trigger.h"
  /* GPIO Libs */
 
 /* GPIO Stuff */
