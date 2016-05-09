@@ -72,14 +72,21 @@ uint32_t getData(int sessionfd, char* dest, uint32_t maxBuffer)
     printf("Payload length is greater than max buffer %d\n", streamLength.data);
   }
 
+  #ifdef DEBUG
+  printf("Reading payload: ");
+  #endif /* DEBUG */
+
   byteCounter = 0;
   while (byteCounter < streamLength.data)
   {
     byteCounter += read(sessionfd, &(dest[byteCounter]), streamLength.data-byteCounter);
+    #ifdef DEBUG
+    printf("%02X", dest[byteCounter]);
+    #endif /* DEBUG */
   }
 
   #ifdef DEBUG
-  printf("Payload received\n");
+  printf("\n");
   #endif /* DEBUG */
 
   byteCounter = 0;
