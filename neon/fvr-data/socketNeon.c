@@ -32,7 +32,7 @@
 
 #define BANK_SIZE   4
 #define BANK_WIDTH  8
-#define DEBUG
+// #define DEBUG
 
 // Dreaded globals!
 volatile int listenfd  = 0;
