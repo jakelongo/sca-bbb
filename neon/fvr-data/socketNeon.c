@@ -35,7 +35,7 @@
 volatile int listenfd  = 0;
 volatile int sessionfd = 0;
 
-char *operationString[] = {"mul", "add", "sub", "xor", "cmp"};
+char *operationString[] = {"vmul", "vadd", "vsub", "veor", "vceq"};
 
 
 // Housekeeping if program interrupted
@@ -138,6 +138,7 @@ void commandHandler(int sessionfd)
   bitPacket   streamLength;
 
   uint8_t    memBank[BANK_SIZE][BANK_WIDTH];
+  char       opString[512];
 
   // Internal flags
   uint8_t closeServer = 0;
@@ -145,7 +146,7 @@ void commandHandler(int sessionfd)
   unsigned int i;
 
   unsigned int bankIndex = 0;
-  unsigned int opIndex   = 0;
+  void (*opFunction)(uint8_t**);
 
   #ifdef DEBUG
   printf("Initialising GPIO\n");
@@ -227,19 +228,28 @@ void commandHandler(int sessionfd)
 
         break;
 
-      // Set key and check the key length
+      // Select operation from operationString[]
       case 'o':
 
         // Check what operation to perform
-        opIndex = 0;
-        i = 0;
-        while (i < 1) {
-          i += read(sessionfd, (char*) &opIndex, 1-i);
-        }
+        scratchVariable = getData(sessionfd, opString, 512);
 
         #ifdef DEBUG
-          printf("Operation \"%s\" selected\n", operationString[opIndex]);
+          printf("Operation \"%s\" selected\n", opString);
         #endif /* DEBUG */
+
+        // Set up function pointer for exec call
+        if        (!strncmp("vmul", opString)) {
+          opFunction = &neonExecute_vmulu32;
+        } else if (!strncmp("vadd", opString)) {
+          opFunction = &neonExecute_vaddu32;
+        } else if (!strncmp("vsub", opString)) {
+          opFunction = &neonExecute_vsubu32;
+        } else if (!strncmp("vceq", opString)) {
+          opFunction = &neonExecute_vcequ32;
+        } else if (!strncmp("veor", opString)) {
+          opFunction = &neonExecute_veoru32;
+        }
 
         break;
 
@@ -256,9 +266,7 @@ void commandHandler(int sessionfd)
           printf("Performing Operation...");
         #endif /* DEBUG */
 
-        if (execNeon((uint8_t**)memBank, opIndex)) {
-          printf("Invalid operation selected %d\n", opIndex);
-        }
+        (*opFunction)((uint8_t**)memBank);
 
         #ifdef DEBUG
         printf("Read bank index received, membank[%d]\n", bankIndex);
