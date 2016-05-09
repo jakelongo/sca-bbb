@@ -1,7 +1,7 @@
 // trigger header file
 
-int initMap(void);
-int closeMap(void);
-int setupTrigger(void);
-int setTrigger(void);
-int clrTrigger(void);
+int trigger_init(void);
+int trigger_setup(void);
+int trigger_close(void);
+int trigger_set(void);
+int trigger_clr(void);

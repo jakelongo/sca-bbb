@@ -10,7 +10,7 @@
 #include <sys/mman.h>
 #include <sys/stat.h>
 
-#include <fcntl.h> 
+#include <fcntl.h>
  /* GPIO Libs */
 
 /* GPIO Stuff */
@@ -30,61 +30,86 @@
 
 #define PIN_BIT 3
 
-static uint32_t *gpioBase;
-static char mapActive = 0;
+static uint32_t    *gpioBase;
+static char         trigger_mapActive = 0;
 
-int initMap(void){
-    int memfd;
+int trigger_init(void){
+  int memfd;
 
-    memfd = open("/dev/mem", O_RDWR);
-    if (memfd == -1){
-        perror("initMap : Unabe to open /dev/mem");
-        return -1;
-    }
+  memfd = open("/dev/mem", O_RDWR);
+  if (memfd == -1){
+    perror("trigger_init: Unabe to open /dev/mem");
+    return -1;
+  }
 
-    gpioBase = (uint32_t*)mmap(0, MMAP_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, memfd, GPIO2_BASE);
+  gpioBase = (uint32_t*)mmap(0, MMAP_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, memfd, GPIO2_BASE);
 
-    if (gpioBase == MAP_FAILED){
-        close(memfd);
-        perror("initMap : mmap to gpio base failed");
-        return -1;
-    }
+  if (gpioBase == MAP_FAILED){
+    close(memfd);
+    perror("trigger_init: mmap to gpio base failed");
+    return -1;
+  }
 
-    mapActive = 1;
+  trigger_mapActive = 1;
+  return 1;
+}
+
+int trigger_close(void){
+
+  if (trigger_mapActive) {
+    munmap(gpioBase, MMAP_SIZE);
+    trigger_mapActive = 0;
     return 1;
+  } else {
+    return 0;
+  }
+
 }
 
-int closeMap(void){
-	if (mapActive) {
-		munmap(gpioBase, MMAP_SIZE);
-		mapActive = 0;
-		return 1;
-	}
-	else {
-		return 0;
-	}
-}
+int trigger_setup(void){
 
-int setupTrigger(void){
-    uint32_t *gpioOE = NULL;
-    gpioOE   = gpioBase + (GPIO_OE/4);
+  uint32_t *gpioOE = NULL;
+
+  if (trigger_mapActive) {
+     gpioOE   = gpioBase + (GPIO_OE/4);
     *gpioOE  &= ~(1 << PIN_BIT);
+    return 1;
+  } else {
+    perror("trigger_setup: trigger memory map not active!");
     return 0;
+  }
+
 }
 
-int setTrigger(void){
-    uint32_t* gpioSET  = NULL;
-    gpioSET   = gpioBase + (GPIO_SET/4);
+int trigger_set(void){
+
+  uint32_t* gpioSET  = NULL;
+
+  if (trigger_mapActive) {
+     gpioSET  = gpioBase + (GPIO_SET/4);
     *gpioSET  = (1 << PIN_BIT);
+    return 1;
+  } else {
+    perror("trigger_set: trigger memory map not active!");
     return 0;
+  }
+
 }
 
 
-int clrTrigger(void){
-    uint32_t* gpioCLR  = NULL;
-    gpioCLR   = gpioBase + (GPIO_CLR/4);
+int trigger_clr(void){
+
+  uint32_t* gpioCLR  = NULL;
+
+  if (trigger_mapActive) {
+     gpioCLR  = gpioBase + (GPIO_CLR/4);
     *gpioCLR  = (1 << PIN_BIT);
+    return 1;
+  } else {
+    perror("trigger_clr: trigger memory map not active!");
     return 0;
+  }
+
 }
 
 /* GPIO Stuff */
