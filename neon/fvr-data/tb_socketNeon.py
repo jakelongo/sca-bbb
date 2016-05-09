@@ -1,9 +1,10 @@
 import socket
 import binascii
 import unittest
+import random
 
-
-targetObject = None
+targetObject   = None
+returnVariable = None
 
 class neonInterface(object):
 
@@ -119,6 +120,7 @@ def neonGet(args):
   #     arg[0] to be memory bank (0-2)
   #     arg[1] to be destination variable
   global targetObject
+  global returnVariable
 
   if (targetObject == None):
     print "Target not open!"
@@ -146,11 +148,10 @@ def neonGet(args):
   # Flush the socket
   targetObject.flush()
 
-  dpawsexe.env[splitArgs[1]] = dataPayload.upper()
+  returnVariable = dataPayload.upper()
   return True
 
 def neonOp(args):
-  dpawsexe.env['TARGET_OK'] = '0'
   global targetObject
 
   if (targetObject == None):
@@ -182,6 +183,18 @@ def neonExec(args):
 
   return True
 
+def vec2str(vec):
+  wordLen = 64/len(vec)
+  vecstrs = [(format(x, 'X')).zfill(wordLen/4) for x in vec]
+  return ''.join(vecstrs)
+
+def add_vector(bits):
+  a = [random.getrandbits(bits) for i in range(64/bits)]
+  b = [random.getrandbits(bits) for i in range(64/bits)]
+  c = [(x + y) & ((1<<bits)-1) for x, y in zip(a, b)]
+  return [vec2str(x) for x in [a, b, c]]
+
+
 class test_neon(unittest.TestCase):
 
   def test_openAndClose(self):
@@ -195,6 +208,25 @@ class test_neon(unittest.TestCase):
     ret = ret and neonClose('')
     self.assertTrue(ret)
 
+  def test_neonread(self):
+    global returnVariable
+    ret = neonOpen('10.70.25.143 8081')
+    ret = ret and neonSet('3 DEADBEEFDEADC0DE')
+    ret = ret and neonGet('3')
+    ret = ret and neonClose('')
+    self.assertEqual(returnVariable, 'DEADBEEFDEADC0DE')
+
+  def test_neonexec(self):
+    global returnVariable
+    ret = neonOpen('10.70.25.143 8081')
+    ret = ret and neonSet('3 DEADBEEFDEADC0DE')
+    ret = ret and neonGet('3')
+    ret = ret and neonClose('')
+    self.assertEqual(returnVariable, 'DEADBEEFDEADC0DE')
+
 if __name__ == '__main__':
-  unittest.main(verbosity=2)
+  # unittest.main(verbosity=2)
+  a = add_vector(32)
+  print a
+
 
