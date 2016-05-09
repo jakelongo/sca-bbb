@@ -5,6 +5,6 @@ all: eor add mul sub cmp
 
 # Recipes for compiling pre-built assembly objs
 eor:
-	gcc -mfpu=neon neonExecute_INSTR.S -D INSTR=veor.u32 -o neonExecute_veor.o
+	gcc -mfpu=neon neonExecute_INSTR.S -D INSTR=veor.u32 -c -o neonExecute_veor.o
 
 

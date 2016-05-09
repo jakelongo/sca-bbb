@@ -2,20 +2,25 @@
 .arm
 .fpu neon
 
-.global _neonExecute_INSTR
-.global neonExecute_INSTR
+#define MAKE_FN_NAME(x) void  neonExecute_## x
+#define FUNCTION_NAME(y) MAKE_FN_NAME(y)
 
-.type   _neonExecute_INSTR,%function
-.type   neonExecute_INSTR,%function
+FUNCTION_NAME(SIGNAL1)
+
+.global _FUNCTION_NAME(INSTR)
+.global FUNCTION_NAME(INSTR)
+
+.type   _FUNCTION_NAME(INSTR),%function
+.type   FUNCTION_NAME(INSTR),%function
 
 .extern setTrigger(void)
 .extern clrTrigger(void)
 
 .align 8
 
-@ neonExecute_INSTR(uint8_t** memBank, uint32_t opIndex); 
-neonExecute_INSTR:
-_neonExecute_INSTR:
+@ FUNCTION_NAME(INSTR)(uint8_t** memBank, uint32_t opIndex); 
+FUNCTION_NAME(INSTR):
+_FUNCTION_NAME(INSTR):
   stmdb   sp!,{r4-r12,lr}
 
   /* Get some variables in place and return var */
@@ -72,5 +77,5 @@ _neonExecute_INSTR:
 
   ldmia   sp!,{r4-r12,pc}
 
-.size _neonExecute_INSTR,.-_neonExecute_INSTR
-.size neonExecute_INSTR,.-neonExecute_INSTR
+.size _FUNCTION_NAME(INSTR),.-_FUNCTION_NAME(INSTR)
+.size FUNCTION_NAME(INSTR),.-FUNCTION_NAME(INSTR)
