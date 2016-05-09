@@ -22,6 +22,9 @@
 #include "socketNeon.h"
 #include "trigger.h"
 
+// Function declarations
+#include "neonExecute_INSTR.h"
+
 #define ascii2Bin(x) ( ((x)>='0' && (x)<='9') ? (x)-'0' : 10+tolower(x)-'a' )
 #define bin2Ascii(x) ( ((x)<=9) ? (x)+'0' : (x)+'A'-10 )
 
