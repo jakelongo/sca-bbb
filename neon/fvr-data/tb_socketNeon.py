@@ -189,6 +189,12 @@ class test_neon(unittest.TestCase):
     ret = ret and neonClose('')
     self.assertTrue(ret)
 
+  def test_neonwrite(self):
+    ret = neonOpen('10.70.25.143 8081')
+    ret = ret and neonSet('1 AABBCCDDEEFF0011')
+    ret = ret and neonClose('')
+    self.assertTrue(ret)
+
 if __name__ == '__main__':
   unittest.main(verbosity=2)
 

@@ -135,21 +135,16 @@ uint32_t putData(int sessionfd, char* src, uint32_t buffLen)
 
 void commandHandler(int sessionfd)
 {
-
-  uint32_t    scratchVariable;
   char        cmdIdentifier;
   bitPacket   streamLength;
 
-  uint8_t    memBank[BANK_SIZE][BANK_WIDTH];
-  char       opString[512];
+  uint8_t     memBank[BANK_SIZE][BANK_WIDTH];
+  char        opString[512];
 
   // Internal flags
-  uint8_t closeServer = 0;
-
-  unsigned int i;
-
-  unsigned int bankIndex = 0;
-  void (*opFunction)(uint8_t**);
+  uint8_t       closeServer = 0;
+  unsigned int  cntr;
+  void          (*opFunction)(uint8_t*);
 
   #ifdef DEBUG
   printf("Initialising GPIO\n");
@@ -169,14 +164,15 @@ void commandHandler(int sessionfd)
     switch(cmdIdentifier)
     {
 
-      // Set key and check the key length
+      // Set data in register banks
       case 'w':
 
         // Check which bank (0-2)
         bankIndex = 0;
-        i = 0;
-        while (i < 1) {
-          i += read(sessionfd, (char*) &bankIndex, 1-i);
+        cntr      = 0;
+
+        while (cntr < 1) {
+          cntr += read(sessionfd, (char*) &bankIndex, 1-i);
         }
 
         #ifdef DEBUG
@@ -188,14 +184,16 @@ void commandHandler(int sessionfd)
           return;
         }
 
-        scratchVariable = getData(sessionfd, memBank[bankIndex], BANK_WIDTH);
+        scratchVariable = getData(sessionfd, memBank[bankIndex], (BANK_WIDTH*BANK_SIZE)-(BANK_WIDTH*bankIndex));
 
         #ifdef DEBUG
-        printf("Write membank[%d] = ", bankIndex);
-        for (i = 0 ; i < BANK_WIDTH; ++i) {
-          printf("%02X", memBank[bankIndex][i]);
+        for (int wordCntr = 0; wordCntr < (scratchVariable/BANK_WIDTH); ++wordCntr) {
+          printf("Write membank[%d] = ", bankIndex+wordCntr);
+          for (cntr = 0 ; cntr < BANK_WIDTH; ++i) {
+            printf("%02X", memBank[bankIndex+wordCntr][i]);
+          }
+          printf("\n");
         }
-        printf("\n");
         #endif /* DEBUG */
 
         break;
@@ -205,9 +203,9 @@ void commandHandler(int sessionfd)
 
         // Check which bank (0-2)
         bankIndex = 0;
-        i = 0;
-        while (i < 1) {
-          i += read(sessionfd, (char*) &bankIndex, 1-i);
+        cntr = 0;
+        while (cntr < 1) {
+          cntr += read(sessionfd, (char*) &bankIndex, 1-i);
         }
 
         #ifdef DEBUG
@@ -223,7 +221,7 @@ void commandHandler(int sessionfd)
 
         #ifdef DEBUG
         printf("Read membank[%d] = ", bankIndex);
-        for (i = 0 ; i < BANK_WIDTH; ++i) {
+        for (cntr = 0 ; cntr < BANK_WIDTH; ++i) {
           printf("%02X", memBank[bankIndex][i]);
         }
         printf("\n");
@@ -260,9 +258,9 @@ void commandHandler(int sessionfd)
 
         // Check which bank
         bankIndex = 0;
-        i = 0;
-        while (i < 1) {
-          i += read(sessionfd, (char*) &bankIndex, 1-i);
+        cntr = 0;
+        while (cntr < 1) {
+          cntr += read(sessionfd, (char*) &bankIndex, 1-i);
         }
 
         #ifdef DEBUG
@@ -281,10 +279,10 @@ void commandHandler(int sessionfd)
         }
 
         #ifdef DEBUG
-        i = 0;
+        cntr = 0;
         printf("Done\n");
         printf("Read membank[0] = ");
-        for (i = 0 ; i < BANK_WIDTH; ++i) {
+        for (cntr = 0 ; cntr < BANK_WIDTH; ++i) {
           printf("%02X", memBank[0][i]);
         }
         printf("\n");
@@ -303,7 +301,7 @@ void commandHandler(int sessionfd)
 
         printf("Unkonwn command received %c\n Closing down server.\n", cmdIdentifier);
         closeServer = 0x01;
-
+        intHandler()
         break;
 
     }
