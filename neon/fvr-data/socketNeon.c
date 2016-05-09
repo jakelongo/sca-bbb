@@ -51,6 +51,12 @@ void intHandler(int var)
   exit(-1);
 }
 
+void printMemory(uint32_t memsize, uint8_t* memptr){
+  for (uint32_t cntr = 0; cntr < memsize; ++cntr){
+    printf("%02X", memptr[cntr]);
+  }
+}
+
 uint32_t getData(int sessionfd, char* dest, uint32_t maxBuffer)
 {
   bitPacket   streamLength;
@@ -72,20 +78,15 @@ uint32_t getData(int sessionfd, char* dest, uint32_t maxBuffer)
     printf("Payload length is greater than max buffer %d\n", streamLength.data);
   }
 
-  #ifdef DEBUG
-  printf("Reading payload: ");
-  #endif /* DEBUG */
-
   byteCounter = 0;
   while (byteCounter < streamLength.data)
   {
     byteCounter += read(sessionfd, &(dest[byteCounter]), streamLength.data-byteCounter);
-    #ifdef DEBUG
-    printf("%02X", dest[byteCounter]);
-    #endif /* DEBUG */
   }
 
   #ifdef DEBUG
+  printf("Payload received: ");
+  printMemory(byteCounter, dest)
   printf("\n");
   #endif /* DEBUG */
 
