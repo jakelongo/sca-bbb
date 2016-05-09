@@ -4,11 +4,12 @@
 
 #define MAKE_FN_NAME(x) void  neonExecute_## x
 #define FUNCTION_NAME(y) MAKE_FN_NAME(y)
+#define UFUNCTION_NAME(y) _ ## MAKE_FN_NAME(y)
 
-.global _FUNCTION_NAME(INSTR)
+.global UFUNCTION_NAME(INSTR)
 .global FUNCTION_NAME(INSTR)
 
-.type   _FUNCTION_NAME(INSTR),%function
+.type   UFUNCTION_NAME(INSTR),%function
 .type   FUNCTION_NAME(INSTR),%function
 
 .extern setTrigger(void)
@@ -18,7 +19,7 @@
 
 @ FUNCTION_NAME(INSTR)(uint8_t** memBank, uint32_t opIndex); 
 FUNCTION_NAME(INSTR):
-_FUNCTION_NAME(INSTR):
+UFUNCTION_NAME(INSTR):
   stmdb   sp!,{r4-r12,lr}
 
   /* Get some variables in place and return var */
@@ -75,5 +76,5 @@ _FUNCTION_NAME(INSTR):
 
   ldmia   sp!,{r4-r12,pc}
 
-.size _FUNCTION_NAME(INSTR),.-_FUNCTION_NAME(INSTR)
+.size UFUNCTION_NAME(INSTR),.-UFUNCTION_NAME(INSTR)
 .size FUNCTION_NAME(INSTR),.-FUNCTION_NAME(INSTR)
