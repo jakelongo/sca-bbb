@@ -9,7 +9,7 @@ all: $(OBJS)
 	gcc -mfpu=neon -std=c99 $(SOURCES) $(OBJS) -DDEBUG -g -o gdb_debug.out
 
 v%.o: neonExecute_INSTR.S
-	gcc -mfpu=neon $< -D INSTR=$(basename $@) -D WORD=u32 -c -o $@
+	gcc -mfpu=neon $< -D INSTR=$(basename $@) -D WORD=u32 -c -g -o $@
 
 clean:
 	rm -f *.out
