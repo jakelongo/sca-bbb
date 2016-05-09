@@ -14,8 +14,8 @@
 .type   UFUNCTION_NAME(INSTR,WORD),%function
 .type   FUNCTION_NAME(INSTR,WORD),%function
 
-.extern trigger_set(void)
-.extern trigger_clr(void)
+.extern trigger_set
+.extern trigger_clr
 
 .align 8
 
