@@ -11,5 +11,8 @@ all: $(patsubst %.o,%,$(OBJS))
 %: neonExecute_INSTR.S
 	gcc -mfpu=neon $< -D INSTR=$@ -D WORD=u32 -c -o $@.o
 
+clean:
+	rm *.out
+	rm *.o
 
 .PHONY: all makefile
