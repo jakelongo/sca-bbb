@@ -146,7 +146,7 @@ void commandHandler(int sessionfd)
   // Internal flags
   uint8_t       closeServer = 0;
   unsigned int  cntr;
-  void          (*opFunction)(uint8_t*);
+  void          (*opFunction)(uint8_t**);
 
   #ifdef DEBUG
   printf("Initialising GPIO\n");
