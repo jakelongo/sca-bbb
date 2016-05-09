@@ -231,6 +231,10 @@ class test_neon(unittest.TestCase):
     vecs = add_vector(32)
 
     ret = neonOpen('10.70.25.143 8081')
+
+    for i in xrange(8):
+      ret = ret and neonSet(str(i) + ' DEADC0DE' + (format(i, 'X')).zfill(8))
+
     ret = ret and neonSet('3 ' + vecs[0])
     ret = ret and neonSet('4 ' + vecs[1])
     ret = ret and neonOp('vadd')

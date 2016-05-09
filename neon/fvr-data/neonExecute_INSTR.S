@@ -53,8 +53,8 @@ UFUNCTION_NAME(INSTR,WORD):
   .endr
 
   .rept 1
-  INSTR.WORD d2, d3, d4
   veor.u32   d2, d5, d6
+  INSTR.WORD d2, d3, d4
   .endr
 
   bl trigger_clr
