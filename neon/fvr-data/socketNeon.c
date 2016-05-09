@@ -303,7 +303,7 @@ void commandHandler(int sessionfd)
 
         printf("Unkonwn command received %c\n Closing down server.\n", cmdIdentifier);
         closeServer = 0x01;
-        intHandler()
+        intHandler();
         break;
 
     }
