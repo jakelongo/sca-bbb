@@ -6,7 +6,7 @@
 #define FUNCTION_NAME(x,y) MAKE_FN_NAME(x,y)
 
 #define UMAKE_FN_NAME(x,y) _neonExecute_## x ## y
-#define UFUNCTION_NAME(x,y) _ ## UMAKE_FN_NAME(x,y)
+#define UFUNCTION_NAME(x,y) UMAKE_FN_NAME(x,y)
 
 .global UFUNCTION_NAME(INSTR,WORD)
 .global FUNCTION_NAME(INSTR,WORD)
