@@ -38,21 +38,20 @@ _neonExecute_INSTR:
   vld1.u8 {d12}, [r4]!; /* load memBank[10] */
   vld1.u8 {d13}, [r4]!; /* load memBank[11] */
 
+  bl setTrigger
 
-  .rept 5000
+  .rept 1000
   mov r1, r1
   .endr
 
-  bl setTrigger
-
-  .rept 100
+  .rept 1
   INSTR     d0, d1, d2
   veor.u32  d0, d3, d4
   .endr
 
   bl clrTrigger
 
-  .rept 1000
+  .rept 3000
   mov r1, r1
   .endr
 
