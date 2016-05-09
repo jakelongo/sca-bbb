@@ -5,8 +5,6 @@
 #define MAKE_FN_NAME(x) void  neonExecute_## x
 #define FUNCTION_NAME(y) MAKE_FN_NAME(y)
 
-FUNCTION_NAME(SIGNAL1)
-
 .global _FUNCTION_NAME(INSTR)
 .global FUNCTION_NAME(INSTR)
 
