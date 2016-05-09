@@ -138,6 +138,8 @@ void commandHandler(int sessionfd)
   char        cmdIdentifier;
   bitPacket   streamLength;
 
+  uint32_t    scratchVariable;
+  uint32_t    memBankIndex;
   uint8_t     memBank[BANK_SIZE][BANK_WIDTH];
   char        opString[512];
 
@@ -168,29 +170,29 @@ void commandHandler(int sessionfd)
       case 'w':
 
         // Check which bank (0-2)
-        bankIndex = 0;
+        memBankIndex = 0;
         cntr      = 0;
 
         while (cntr < 1) {
-          cntr += read(sessionfd, (char*) &bankIndex, 1-i);
+          cntr += read(sessionfd, (char*) &memBankIndex, 1 - cntr);
         }
 
         #ifdef DEBUG
-        printf("Write bank index received, membank[%d]\n", bankIndex);
+        printf("Write bank index received, membank[%d]\n", memBankIndex);
         #endif /* DEBUG */
 
-        if (bankIndex > (BANK_SIZE-1)) {
-          printf("Invalid bank index: %d", bankIndex);
+        if (memBankIndex > (BANK_SIZE-1)) {
+          printf("Invalid bank index: %d", memBankIndex);
           return;
         }
 
-        scratchVariable = getData(sessionfd, memBank[bankIndex], (BANK_WIDTH*BANK_SIZE)-(BANK_WIDTH*bankIndex));
+        scratchVariable = getData(sessionfd, memBank[memBankIndex], (BANK_WIDTH*BANK_SIZE)-(BANK_WIDTH*memBankIndex));
 
         #ifdef DEBUG
         for (int wordCntr = 0; wordCntr < (scratchVariable/BANK_WIDTH); ++wordCntr) {
-          printf("Write membank[%d] = ", bankIndex+wordCntr);
+          printf("Write membank[%d] = ", memBankIndex+wordCntr);
           for (cntr = 0 ; cntr < BANK_WIDTH; ++i) {
-            printf("%02X", memBank[bankIndex+wordCntr][i]);
+            printf("%02X", memBank[memBankIndex+wordCntr][i]);
           }
           printf("\n");
         }
@@ -202,27 +204,27 @@ void commandHandler(int sessionfd)
       case 'r':
 
         // Check which bank (0-2)
-        bankIndex = 0;
+        memBankIndex = 0;
         cntr = 0;
         while (cntr < 1) {
-          cntr += read(sessionfd, (char*) &bankIndex, 1-i);
+          cntr += read(sessionfd, (char*) &memBankIndex, 1 - cntr);
         }
 
         #ifdef DEBUG
-        printf("Read bank index received, membank[%d]\n", bankIndex);
+        printf("Read bank index received, membank[%d]\n", memBankIndex);
         #endif /* DEBUG */
 
-        if (bankIndex > (BANK_SIZE-1)) {
-          printf("Invalid bank index: %d", bankIndex);
+        if (memBankIndex > (BANK_SIZE-1)) {
+          printf("Invalid bank index: %d", memBankIndex);
           return;
         }
 
-        putData(sessionfd, memBank[bankIndex], BANK_WIDTH);
+        putData(sessionfd, memBank[memBankIndex], BANK_WIDTH);
 
         #ifdef DEBUG
-        printf("Read membank[%d] = ", bankIndex);
+        printf("Read membank[%d] = ", memBankIndex);
         for (cntr = 0 ; cntr < BANK_WIDTH; ++i) {
-          printf("%02X", memBank[bankIndex][i]);
+          printf("%02X", memBank[memBankIndex][i]);
         }
         printf("\n");
         #endif /* DEBUG */
@@ -257,10 +259,10 @@ void commandHandler(int sessionfd)
       case 'e':
 
         // Check which bank
-        bankIndex = 0;
+        memBankIndex = 0;
         cntr = 0;
         while (cntr < 1) {
-          cntr += read(sessionfd, (char*) &bankIndex, 1-i);
+          cntr += read(sessionfd, (char*) &memBankIndex, 1 - cntr);
         }
 
         #ifdef DEBUG
@@ -270,11 +272,11 @@ void commandHandler(int sessionfd)
         (*opFunction)((uint8_t**)memBank);
 
         #ifdef DEBUG
-        printf("Read bank index received, membank[%d]\n", bankIndex);
+        printf("Read bank index received, membank[%d]\n", memBankIndex);
         #endif /* DEBUG */
 
-        if (bankIndex > (BANK_SIZE-1)) {
-          printf("Invalid bank index: %d", bankIndex);
+        if (memBankIndex > (BANK_SIZE-1)) {
+          printf("Invalid bank index: %d", memBankIndex);
           return;
         }
 
