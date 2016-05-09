@@ -242,15 +242,15 @@ void commandHandler(int sessionfd)
         #endif /* DEBUG */
 
         // Set up function pointer for exec call
-        if        (!strncmp("vmul", opString)) {
+        if        (!strncmp("vmul", opString, 511)) {
           opFunction = &neonExecute_vmulu32;
-        } else if (!strncmp("vadd", opString)) {
+        } else if (!strncmp("vadd", opString, 511)) {
           opFunction = &neonExecute_vaddu32;
-        } else if (!strncmp("vsub", opString)) {
+        } else if (!strncmp("vsub", opString, 511)) {
           opFunction = &neonExecute_vsubu32;
-        } else if (!strncmp("vceq", opString)) {
+        } else if (!strncmp("vceq", opString, 511)) {
           opFunction = &neonExecute_vcequ32;
-        } else if (!strncmp("veor", opString)) {
+        } else if (!strncmp("veor", opString, 511)) {
           opFunction = &neonExecute_veoru32;
         }
 
