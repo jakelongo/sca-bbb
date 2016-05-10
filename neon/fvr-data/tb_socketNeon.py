@@ -1,7 +1,10 @@
+import logging
 import socket
 import binascii
 import unittest
 import random
+import ctypes
+import sys
 
 targetObject   = None
 returnVariable = None
@@ -191,10 +194,22 @@ def vec2str(vec):
   vecstrs = [(format(x, 'X')).zfill(wordLen/4) for x in vec]
   return ''.join(vecstrs)
 
+def addSigned(a,b):
+  ia = ctypes.c_int32(a)
+  ib = ctypes.c_int32(b)
+  ic = ctypes.c_int32(ia.value+ib.value)
+
+  print ia
+  print ib
+  print ic
+  print (ctypes.c_uint32(ic.value)).value
+
+  return (ctypes.c_uint32(ic.value)).value
+
 def add_vector(bits):
   a = [random.getrandbits(bits) for i in range(64/bits)]
   b = [random.getrandbits(bits) for i in range(64/bits)]
-  c = [(x + y) & ((1<<bits)-1) for x, y in zip(a, b)]
+  c = [addSigned(x,y) for x, y in zip(a, b)]
   return [vec2str(x) for x in [a, b, c]]
 
 
@@ -228,7 +243,10 @@ class test_neon(unittest.TestCase):
 
   def test_neonexec(self):
     global returnVariable
+    log  = logging.getLogger( "test_neon.neonExec" )
+
     vecs = add_vector(32)
+    log.debug( "vectors = " + str(vecs) )
 
     ret = neonOpen('10.70.25.143 8081')
 
@@ -244,6 +262,10 @@ class test_neon(unittest.TestCase):
     self.assertEqual(returnVariable, vecs[2])
 
 if __name__ == '__main__':
+  logging.basicConfig( stream=sys.stderr )
+  logging.getLogger( "test_neon.neonExec" ).setLevel( logging.DEBUG )
   unittest.main(verbosity=2)
+  # vecs = add_vector(32)
+  # print vecs
 
 

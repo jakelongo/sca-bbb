@@ -31,20 +31,20 @@ UFUNCTION_NAME(INSTR,WORD):
   mov r7, #0
 
   /* load the memory banks */
-  vld1.u8 {d0}, [r4]!; /* load memBank[0] */
-  vld1.u8 {d1}, [r4]!; /* load memBank[0] */
-  vld1.u8 {d2}, [r4]!; /* load memBank[0] */
-  vld1.u8 {d3}, [r4]!; /* load memBank[1] */
-  vld1.u8 {d4}, [r4]!; /* load memBank[2] */
-  vld1.u8 {d5}, [r4]!; /* load memBank[3] */
-  vld1.u8 {d6}, [r4]!; /* load memBank[4] */
-  vld1.u8 {d7}, [r4]!; /* load memBank[5] */
-  vld1.u8 {d8}, [r4]!; /* load memBank[6] */
-  vld1.u8 {d9}, [r4]!; /* load memBank[7] */
-  vld1.u8 {d10}, [r4]!; /* load memBank[8] */
-  vld1.u8 {d11}, [r4]!; /* load memBank[9] */
-  vld1.u8 {d12}, [r4]!; /* load memBank[10] */
-  vld1.u8 {d13}, [r4]!; /* load memBank[11] */
+  vld1.WORD {d0}, [r4]!; /* load memBank[0] */
+  vld1.WORD {d1}, [r4]!; /* load memBank[0] */
+  vld1.WORD {d2}, [r4]!; /* load memBank[0] */
+  vld1.WORD {d3}, [r4]!; /* load memBank[1] */
+  vld1.WORD {d4}, [r4]!; /* load memBank[2] */
+  vld1.WORD {d5}, [r4]!; /* load memBank[3] */
+  vld1.WORD {d6}, [r4]!; /* load memBank[4] */
+  vld1.WORD {d7}, [r4]!; /* load memBank[5] */
+  vld1.WORD {d8}, [r4]!; /* load memBank[6] */
+  vld1.WORD {d9}, [r4]!; /* load memBank[7] */
+  vld1.WORD {d10}, [r4]!; /* load memBank[8] */
+  vld1.WORD {d11}, [r4]!; /* load memBank[9] */
+  vld1.WORD {d12}, [r4]!; /* load memBank[10] */
+  vld1.WORD {d13}, [r4]!; /* load memBank[11] */
 
   bl trigger_set
 
@@ -63,20 +63,20 @@ UFUNCTION_NAME(INSTR,WORD):
   mov r1, r1
   .endr
 
-  vst1.u8 {d0}, [r5]!; /* load memBank[0] */
-  vst1.u8 {d1}, [r5]!; /* load memBank[0] */
-  vst1.u8 {d2}, [r5]!; /* load memBank[0] */
-  vst1.u8 {d3}, [r5]!; /* load memBank[1] */
-  vst1.u8 {d4}, [r5]!; /* load memBank[2] */
-  vst1.u8 {d5}, [r5]!; /* load memBank[3] */
-  vst1.u8 {d6}, [r5]!; /* load memBank[4] */
-  vst1.u8 {d7}, [r5]!; /* load memBank[5] */
-  vst1.u8 {d8}, [r5]!; /* load memBank[6] */
-  vst1.u8 {d9}, [r5]!; /* load memBank[7] */
-  vst1.u8 {d10}, [r5]!; /* load memBank[8] */
-  vst1.u8 {d11}, [r5]!; /* load memBank[9] */
-  vst1.u8 {d12}, [r5]!; /* load memBank[10] */
-  vst1.u8 {d13}, [r5]!; /* load memBank[11] */
+  vst1.WORD {d0}, [r5]!; /* load memBank[0] */
+  vst1.WORD {d1}, [r5]!; /* load memBank[0] */
+  vst1.WORD {d2}, [r5]!; /* load memBank[0] */
+  vst1.WORD {d3}, [r5]!; /* load memBank[1] */
+  vst1.WORD {d4}, [r5]!; /* load memBank[2] */
+  vst1.WORD {d5}, [r5]!; /* load memBank[3] */
+  vst1.WORD {d6}, [r5]!; /* load memBank[4] */
+  vst1.WORD {d7}, [r5]!; /* load memBank[5] */
+  vst1.WORD {d8}, [r5]!; /* load memBank[6] */
+  vst1.WORD {d9}, [r5]!; /* load memBank[7] */
+  vst1.WORD {d10}, [r5]!; /* load memBank[8] */
+  vst1.WORD {d11}, [r5]!; /* load memBank[9] */
+  vst1.WORD {d12}, [r5]!; /* load memBank[10] */
+  vst1.WORD {d13}, [r5]!; /* load memBank[11] */
 
   mov r0, r7
 
