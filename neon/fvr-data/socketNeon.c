@@ -290,7 +290,9 @@ void commandHandler(int sessionfd)
 
       case 'x':
 
+        #ifdef DEBUG
         printf("Exit command received - closing down.\n");
+        #endif /* DEBUG */
         closeServer = 0x01;
 
         break;

@@ -9,7 +9,7 @@ import sys
 targetObject   = None
 returnVariable = None
 hostname       = '10.70.25.143'
-hostport       = '8081'
+hostport       = '8082'
 
 class neonInterface(object):
 
@@ -210,21 +210,15 @@ def addSigned(a,b):
   ia = ctypes.c_int32(a)
   ib = ctypes.c_int32(b)
   ic = ctypes.c_int32(ia.value+ib.value)
-
   return (ctypes.c_uint32(ic.value)).value
 
-def subSigned(a,b):
-  ia = ctypes.c_int32(a)
-  ib = ctypes.c_int32(b)
-  ic = ctypes.c_int32(ia.value-ib.value)
-
-  return (ctypes.c_uint32(ic.value)).value
-
+def bits2signed(a,bits):
+  return (((a)+ 2**(bits-1)) % 2**bits - 2**(bits-1)) & (2**bits-1)
 
 def add_vector(bits):
   a = [random.getrandbits(bits) for i in range(64/bits)]
   b = [random.getrandbits(bits) for i in range(64/bits)]
-  c = [addSigned(x,y) for x, y in zip(a, b)]
+  c = [bits2signed(x+y,bits) for x, y in zip(a, b)]
 
   strs = [vec2str(x)     for x in [a, b, c]]
   payl = [vec2payload(x) for x in [a, b, c]]
@@ -234,15 +228,21 @@ def add_vector(bits):
 def sub_vector(bits):
   a = [random.getrandbits(bits) for i in range(64/bits)]
   b = [random.getrandbits(bits) for i in range(64/bits)]
-  c = [subSigned(x,y) for x, y in zip(a, b)]
+  c = [bits2signed(x-y,bits) for x, y in zip(a, b)]
 
   strs = [vec2str(x)     for x in [a, b, c]]
   payl = [vec2payload(x) for x in [a, b, c]]
 
   return (strs, payl)
 
+vmuls = ['i8', 'i16', 'i32']
+vadds = ['i8', 'i16', 'i32', 'i64']
+vsubs = ['i8', 'i16', 'i32', 'i64']
+veors = ['u64']
+vands = ['u64']
 
 class test_neon(unittest.TestCase):
+
 
   def test_openAndClose(self):
     ret = neonOpen(hostname + ' ' + hostport)
@@ -305,42 +305,49 @@ class test_neon(unittest.TestCase):
   def test_neon_vadd(self):
     global returnVariable
     ret = neonOpen(hostname + ' ' + hostport)
-    ret = ret and neonOp('vaddi32')
 
     for testIdx in xrange(100):
-      (vecstrs, vecpay) = add_vector(32)
-      ret = ret and neonSet('3 ' + vecpay[0])
-      ret = ret and neonSet('4 ' + vecpay[1])
-      ret = ret and neonExec('')
-      ret = ret and neonGet('2')
+
+      width = random.randint(0, len(vadds))
+      neonOp('vadd' + vadds[width])
+
+      (vecstrs, vecpay) = add_vector(int((vadds[width])[1:]))
+
+      neonSet('3 ' + vecpay[0])
+      neonSet('4 ' + vecpay[1])
+
+      neonExec('')
+      neonGet('2')
+
       self.assertEqual(returnVariable, vecpay[2])
 
-    ret = ret and neonClose('')
-
-    self.assertTrue(ret)
+    neonClose('')
 
   def test_neon_vsub(self):
     global returnVariable
     ret = neonOpen(hostname + ' ' + hostport)
-    ret = ret and neonOp('vsubi32')
 
     for testIdx in xrange(100):
-      (vecstrs, vecpay) = sub_vector(32)
-      ret = ret and neonSet('3 ' + vecpay[0])
-      ret = ret and neonSet('4 ' + vecpay[1])
-      ret = ret and neonExec('')
-      ret = ret and neonGet('2')
+
+      width = random.randint(0, len(vsubs))
+      neonOp('vsub' + vsubs[width])
+
+      (vecstrs, vecpay) = sub_vector(int((vsubs[width])[1:]))
+
+      neonSet('3 ' + vecpay[0])
+      neonSet('4 ' + vecpay[1])
+
+      neonExec('')
+      neonGet('2')
+
       self.assertEqual(returnVariable, vecpay[2])
 
-    ret = ret and neonClose('')
-
-    self.assertTrue(ret)
+    neonClose('')
 
 if __name__ == '__main__':
-  logging.basicConfig( stream=sys.stderr )
-  logging.getLogger( "test_neon.neonExec" ).setLevel( logging.ERROR )
   unittest.main(verbosity=2)
   # vecs = add_vector(32)
+  # vecs = sub_vector(16)
   # print vecs
 
 
