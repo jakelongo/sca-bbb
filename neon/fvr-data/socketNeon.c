@@ -38,8 +38,6 @@
 volatile int listenfd  = 0;
 volatile int sessionfd = 0;
 
-char *operationString[] = {"vmul", "vadd", "vsub", "veor", "vceq"};
-
 
 // Housekeeping if program interrupted
 void intHandler(int var)
@@ -245,17 +243,33 @@ void commandHandler(int sessionfd)
           printf("Operation \"%s\" selected\n", opString);
         #endif /* DEBUG */
 
-        // Set up function pointer for exec call
-        if        (!strncmp("vmul", opString, 511)) {
-          opFunction = &neonExecute_vmulu32;
-        } else if (!strncmp("vadd", opString, 511)) {
-          opFunction = &neonExecute_vaddu32;
-        } else if (!strncmp("vsub", opString, 511)) {
-          opFunction = &neonExecute_vsubu32;
-        } else if (!strncmp("vceq", opString, 511)) {
-          opFunction = &neonExecute_vcequ32;
-        } else if (!strncmp("veor", opString, 511)) {
-          opFunction = &neonExecute_veoru32;
+        // wow.....just.....wow
+        if        (!strncmp("vandu64", opString, 512)) {
+          opFunction = &neonExecute_vandu64;
+        } else if (!strncmp("veoru64", opString, 512)) {
+          opFunction = &neonExecute_veoru64;
+        } else if (!strncmp("vmuli8 ", opString, 512)) {
+          opFunction = &neonExecute_vmuli8 ;
+        } else if (!strncmp("vaddi8 ", opString, 512)) {
+          opFunction = &neonExecute_vaddi8 ;
+        } else if (!strncmp("_vsubi8 ", opString, 512)) {
+          opFunction = &neonExecute_vsubi8 ;
+        } else if (!strncmp("vmuli16", opString, 512)) {
+          opFunction = &neonExecute_vmuli16;
+        } else if (!strncmp("vaddi16", opString, 512)) {
+          opFunction = &neonExecute_vaddi16;
+        } else if (!strncmp("vsubi16", opString, 512)) {
+          opFunction = &neonExecute_vsubi16;
+        } else if (!strncmp("vmuli32", opString, 512)) {
+          opFunction = &neonExecute_vmuli32;
+        } else if (!strncmp("vaddi32", opString, 512)) {
+          opFunction = &neonExecute_vaddi32;
+        } else if (!strncmp("vsubi32", opString, 512)) {
+          opFunction = &neonExecute_vsubi32;
+        } else if (!strncmp("vaddi64", opString, 512)) {
+          opFunction = &neonExecute_vaddi64;
+        } else if (!strncmp("vsubi64", opString, 512)) {
+          opFunction = &neonExecute_vsubi64;
         }
 
         break;
