@@ -8,6 +8,8 @@ import sys
 
 targetObject   = None
 returnVariable = None
+hostname       = '10.70.25.143'
+hostport       = '8081'
 
 class neonInterface(object):
 
@@ -194,41 +196,68 @@ def vec2str(vec):
   vecstrs = [(format(x, 'X')).zfill(wordLen/4) for x in vec]
   return ''.join(vecstrs)
 
+# the receiver is agnostic of word sizes so this converts to the
+# correct memory format to be imported by the assembly calls
+def vec2payload(vec):
+  wordLen = 64/len(vec)
+  byteLen = wordLen/8
+  charLen = byteLen*2
+  vecstrs = [(format(x, 'X')).zfill(charLen) for x in vec]
+  payload = ''.join([''.join(reversed([x[i:i+2] for i in range(0, len(x), 2)])) for x in vecstrs])
+  return payload
+
 def addSigned(a,b):
   ia = ctypes.c_int32(a)
   ib = ctypes.c_int32(b)
   ic = ctypes.c_int32(ia.value+ib.value)
 
-  print ia
-  print ib
-  print ic
-  print (ctypes.c_uint32(ic.value)).value
+  return (ctypes.c_uint32(ic.value)).value
+
+def subSigned(a,b):
+  ia = ctypes.c_int32(a)
+  ib = ctypes.c_int32(b)
+  ic = ctypes.c_int32(ia.value-ib.value)
 
   return (ctypes.c_uint32(ic.value)).value
+
 
 def add_vector(bits):
   a = [random.getrandbits(bits) for i in range(64/bits)]
   b = [random.getrandbits(bits) for i in range(64/bits)]
   c = [addSigned(x,y) for x, y in zip(a, b)]
-  return [vec2str(x) for x in [a, b, c]]
+
+  strs = [vec2str(x)     for x in [a, b, c]]
+  payl = [vec2payload(x) for x in [a, b, c]]
+
+  return (strs, payl)
+
+def sub_vector(bits):
+  a = [random.getrandbits(bits) for i in range(64/bits)]
+  b = [random.getrandbits(bits) for i in range(64/bits)]
+  c = [subSigned(x,y) for x, y in zip(a, b)]
+
+  strs = [vec2str(x)     for x in [a, b, c]]
+  payl = [vec2payload(x) for x in [a, b, c]]
+
+  return (strs, payl)
 
 
 class test_neon(unittest.TestCase):
 
   def test_openAndClose(self):
-    ret = neonOpen('10.70.25.143 8081')
+    ret = neonOpen(hostname + ' ' + hostport)
     ret = ret and neonClose('')
     self.assertTrue(ret)
 
   def test_neonwrite(self):
-    ret = neonOpen('10.70.25.143 8081')
+    ret = neonOpen(hostname + ' ' + hostport)
     ret = ret and neonSet('1 AABBCCDDEEFF0011')
     ret = ret and neonClose('')
     self.assertTrue(ret)
 
   def test_neonread(self):
     global returnVariable
-    ret = neonOpen('10.70.25.143 8081')
+    ret = neonOpen(hostname + ' ' + hostport)
     ret = ret and neonSet('3 DEADBEEFDEADC0DE')
     ret = ret and neonGet('3')
     ret = ret and neonClose('')
@@ -236,34 +265,80 @@ class test_neon(unittest.TestCase):
 
   def test_neonsetop(self):
     global returnVariable
-    ret = neonOpen('10.70.25.143 8081')
+    ret = neonOpen(hostname + ' ' + hostport)
     ret = ret and neonOp('vmul')
     ret = ret and neonClose('')
     self.assertTrue(ret)
 
   def test_neonexec(self):
     global returnVariable
-    log  = logging.getLogger( "test_neon.neonExec" )
+    (vecstrs, vecpay) = add_vector(32)
 
-    vecs = add_vector(32)
-    log.debug( "vectors = " + str(vecs) )
+    ret = neonOpen(hostname + ' ' + hostport)
 
-    ret = neonOpen('10.70.25.143 8081')
-
-    for i in xrange(8):
-      ret = ret and neonSet(str(i) + ' DEADC0DE' + (format(i, 'X')).zfill(8))
-
-    ret = ret and neonSet('3 ' + vecs[0])
-    ret = ret and neonSet('4 ' + vecs[1])
+    ret = ret and neonSet('3 ' + vecpay[0])
+    ret = ret and neonSet('4 ' + vecpay[1])
     ret = ret and neonOp('vadd')
     ret = ret and neonExec('')
     ret = ret and neonGet('2')
     ret = ret and neonClose('')
-    self.assertEqual(returnVariable, vecs[2])
+
+    self.assertEqual(returnVariable, vecpay[2])
+
+  def test_fillmem(self):
+    global returnVariable
+    ret = neonOpen(hostname + ' ' + hostport)
+
+    # fill the memory
+    for i in xrange(8):
+      ret = ret and neonSet(str(i) + ' DEADC0DE' + (format(i, 'X')).zfill(8))
+
+    # read the memory
+    for i in xrange(8):
+      ret = ret and neonGet(str(i))
+      self.assertEqual(returnVariable, 'DEADC0DE' + (format(i, 'X')).zfill(8))
+
+    ret = ret and neonClose('')
+    self.assertTrue(ret)
+
+
+  def test_neon_vadd(self):
+    global returnVariable
+    ret = neonOpen(hostname + ' ' + hostport)
+    ret = ret and neonOp('vadd')
+
+    for testIdx in xrange(100):
+      (vecstrs, vecpay) = add_vector(32)
+      ret = ret and neonSet('3 ' + vecpay[0])
+      ret = ret and neonSet('4 ' + vecpay[1])
+      ret = ret and neonExec('')
+      ret = ret and neonGet('2')
+      self.assertEqual(returnVariable, vecpay[2])
+
+    ret = ret and neonClose('')
+
+    self.assertTrue(ret)
+
+  def test_neon_vsub(self):
+    global returnVariable
+    ret = neonOpen(hostname + ' ' + hostport)
+    ret = ret and neonOp('vsub')
+
+    for testIdx in xrange(100):
+      (vecstrs, vecpay) = sub_vector(32)
+      ret = ret and neonSet('3 ' + vecpay[0])
+      ret = ret and neonSet('4 ' + vecpay[1])
+      ret = ret and neonExec('')
+      ret = ret and neonGet('2')
+      self.assertEqual(returnVariable, vecpay[2])
+
+    ret = ret and neonClose('')
+
+    self.assertTrue(ret)
 
 if __name__ == '__main__':
   logging.basicConfig( stream=sys.stderr )
-  logging.getLogger( "test_neon.neonExec" ).setLevel( logging.DEBUG )
+  logging.getLogger( "test_neon.neonExec" ).setLevel( logging.ERROR )
   unittest.main(verbosity=2)
   # vecs = add_vector(32)
   # print vecs

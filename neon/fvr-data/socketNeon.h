@@ -8,7 +8,6 @@ typedef union bitpacketUnion {
   uint32_t data;
 } bitPacket;
 
-
 uint32_t getData(int sessionfd, char* dest, uint32_t maxBuffer);
 uint32_t putData(int sessionfd, char* src, uint32_t buffLen);
 
