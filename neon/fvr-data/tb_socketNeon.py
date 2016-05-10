@@ -9,7 +9,7 @@ import sys
 targetObject   = None
 returnVariable = None
 hostname       = '10.70.25.143'
-hostport       = '8082'
+hostport       = '8081'
 
 class neonInterface(object):
 
@@ -308,7 +308,7 @@ class test_neon(unittest.TestCase):
 
     for testIdx in xrange(100):
 
-      width = random.randint(0, len(vadds))
+      width = random.randint(0, len(vadds)-1)
       neonOp('vadd' + vadds[width])
 
       (vecstrs, vecpay) = add_vector(int((vadds[width])[1:]))
@@ -329,7 +329,7 @@ class test_neon(unittest.TestCase):
 
     for testIdx in xrange(100):
 
-      width = random.randint(0, len(vsubs))
+      width = random.randint(0, len(vsubs)-1)
       neonOp('vsub' + vsubs[width])
 
       (vecstrs, vecpay) = sub_vector(int((vsubs[width])[1:]))

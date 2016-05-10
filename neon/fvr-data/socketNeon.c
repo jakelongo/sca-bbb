@@ -81,6 +81,7 @@ uint32_t getData(int sessionfd, char* dest, uint32_t maxBuffer)
   {
     byteCounter += read(sessionfd, &(dest[byteCounter]), streamLength.data-byteCounter);
   }
+  dest[byteCounter+1] = '\0';
 
   #ifdef DEBUG
   printf("Payload received: ");
