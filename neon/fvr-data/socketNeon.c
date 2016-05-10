@@ -249,11 +249,11 @@ void commandHandler(int sessionfd)
           opFunction = &neonExecute_vandu64;
         } else if (!strncmp("veoru64", opString, 512)) {
           opFunction = &neonExecute_veoru64;
-        } else if (!strncmp("vmuli8 ", opString, 512)) {
+        } else if (!strncmp("vmuli8",  opString, 512)) {
           opFunction = &neonExecute_vmuli8 ;
-        } else if (!strncmp("vaddi8 ", opString, 512)) {
+        } else if (!strncmp("vaddi8",  opString, 512)) {
           opFunction = &neonExecute_vaddi8 ;
-        } else if (!strncmp("_vsubi8 ", opString, 512)) {
+        } else if (!strncmp("vsubi8",  opString, 512)) {
           opFunction = &neonExecute_vsubi8 ;
         } else if (!strncmp("vmuli16", opString, 512)) {
           opFunction = &neonExecute_vmuli16;
