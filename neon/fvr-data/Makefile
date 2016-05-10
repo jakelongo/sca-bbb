@@ -19,9 +19,10 @@ all: $(OBJS)
 	gcc -mfpu=neon -std=c99 $(SOURCES) $(OBJS) -DDEBUG -o    debug.out
 	gcc -mfpu=neon -std=c99 $(SOURCES) $(OBJS) -DDEBUG -g -o gdb_debug.out
 
-# objects for i8
 v%.o: neonExecute_INSTR.S
-	gcc -mfpu=neon $< -D INSTR=$(basename $@) -D WORD=$(shell echo $@ | sed -e "s/.*_\(.*\)\.o/\1/g") -c -g -o $@
+	$(eval INSTR := $(shell echo $@ | sed -e "s/\(.*\)_.*/\1/g"))
+	$(eval WORD  := $(shell echo $@ | sed -e "s/.*_\(.*\)\.o/\1/g"))
+	gcc -mfpu=neon $< -D INSTR=$(INSTR) -D WORD=$(WORD) -c -g -o $@
 
 clean:
 	rm -f *.out
