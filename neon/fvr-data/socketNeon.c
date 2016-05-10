@@ -270,6 +270,9 @@ void commandHandler(int sessionfd)
           opFunction = &neonExecute_vaddi64;
         } else if (!strncmp("vsubi64", opString, 512)) {
           opFunction = &neonExecute_vsubi64;
+        } else {
+          printf("Unknown function selected, defaulting to veor!\n");
+          opFunction = &neonExecute_veoru64;
         }
 
         break;

@@ -266,7 +266,7 @@ class test_neon(unittest.TestCase):
   def test_neonsetop(self):
     global returnVariable
     ret = neonOpen(hostname + ' ' + hostport)
-    ret = ret and neonOp('vmul')
+    ret = ret and neonOp('vmuli32')
     ret = ret and neonClose('')
     self.assertTrue(ret)
 
@@ -278,7 +278,7 @@ class test_neon(unittest.TestCase):
 
     ret = ret and neonSet('3 ' + vecpay[0])
     ret = ret and neonSet('4 ' + vecpay[1])
-    ret = ret and neonOp('vadd')
+    ret = ret and neonOp('vaddi32')
     ret = ret and neonExec('')
     ret = ret and neonGet('2')
     ret = ret and neonClose('')
@@ -305,7 +305,7 @@ class test_neon(unittest.TestCase):
   def test_neon_vadd(self):
     global returnVariable
     ret = neonOpen(hostname + ' ' + hostport)
-    ret = ret and neonOp('vadd')
+    ret = ret and neonOp('vaddi32')
 
     for testIdx in xrange(100):
       (vecstrs, vecpay) = add_vector(32)
@@ -322,7 +322,7 @@ class test_neon(unittest.TestCase):
   def test_neon_vsub(self):
     global returnVariable
     ret = neonOpen(hostname + ' ' + hostport)
-    ret = ret and neonOp('vsub')
+    ret = ret and neonOp('vsubi32')
 
     for testIdx in xrange(100):
       (vecstrs, vecpay) = sub_vector(32)
