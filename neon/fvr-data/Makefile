@@ -22,8 +22,10 @@ all: $(OBJS)
 v%.o: neonExecute_INSTR.S
 	$(eval INSTR := $(shell echo $@ | sed -e "s/\(.*\)_.*/\1/g"))
 	$(eval WORD  := $(shell echo $@ | sed -e "s/.*_\(.*\)\.o/\1/g"))
-	gcc -mfpu=neon $< -D INSTR=$(INSTR) -D WORD=$(WORD) -c -g -o $@
+	echo "void neonExecute_$(INSTR)$(WORD)(uint8_t** membank);" >> auto_neon_header.h
+	echo gcc -mfpu=neon $< -D INSTR=$(INSTR) -D WORD=$(WORD) -c -g -o $@
 
 clean:
 	rm -f *.out
 	rm -f *.o
+	rm -f auto_neon_header.h
