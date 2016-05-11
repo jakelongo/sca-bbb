@@ -1,3 +1,8 @@
+# Author: Jake Longo
+# Note: this is adapted from a version designed
+# to be part of the DPA workflow so may not
+# make complete sense
+
 import logging
 import socket
 import binascii
@@ -5,6 +10,7 @@ import unittest
 import random
 import ctypes
 import sys
+
 
 targetObject   = None
 returnVariable = None
@@ -121,9 +127,6 @@ def neonSet(args):
   return True
 
 def neonGet(args):
-  # Expecting:
-  #     arg[0] to be memory bank (0-2)
-  #     arg[1] to be destination variable
   global targetObject
   global returnVariable
 
@@ -455,8 +458,5 @@ class test_neon(unittest.TestCase):
 
 if __name__ == '__main__':
   unittest.main(verbosity=2)
-  # vecs = add_vector(32)
-  # vecs = sub_vector(16)
-  # print vecs
 
 

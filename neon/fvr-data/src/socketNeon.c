@@ -1,7 +1,11 @@
 // Author: Jake Longo
 
-// Description: targate device socket 'server' for controlling execution
-// on the target device.
+// Description: target device socket 'server' for executing NEON
+// instructions on the target device.
+
+// Note: I'm sure there are plenty of bugs but this is designed
+// to facilitate signal exploration and not 'typical' use cases.
+// (ie., give it undefined input and you should expect garbage!)
 
 // Standard header files
 #include <stdio.h>

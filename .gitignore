@@ -34,3 +34,7 @@ s# Object files
 # OSX files
 *.DS_Store
 *_.DS_Store
+
+# DPA workflow files
+*.dmac
+*.dscr
