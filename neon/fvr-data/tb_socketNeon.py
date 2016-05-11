@@ -235,6 +235,8 @@ def sub_vector(bits):
 
   return (strs, payl)
 
+
+
 vmuls = ['i8', 'i16', 'i32']
 vadds = ['i8', 'i16', 'i32', 'i64']
 vsubs = ['i8', 'i16', 'i32', 'i64']
@@ -306,7 +308,7 @@ class test_neon(unittest.TestCase):
     global returnVariable
     ret = neonOpen(hostname + ' ' + hostport)
 
-    for testIdx in xrange(100):
+    for testIdx in xrange(50):
 
       width = random.randint(0, len(vadds)-1)
       neonOp('vadd' + vadds[width])
@@ -327,7 +329,28 @@ class test_neon(unittest.TestCase):
     global returnVariable
     ret = neonOpen(hostname + ' ' + hostport)
 
-    for testIdx in xrange(100):
+    for testIdx in xrange(50):
+
+      width = random.randint(0, len(vsubs)-1)
+      neonOp('vsub' + vsubs[width])
+
+      (vecstrs, vecpay) = sub_vector(int((vsubs[width])[1:]))
+
+      neonSet('3 ' + vecpay[0])
+      neonSet('4 ' + vecpay[1])
+
+      neonExec('')
+      neonGet('2')
+
+      self.assertEqual(returnVariable, vecpay[2])
+
+    neonClose('')
+
+  def test_neon_vmul(self):
+    global returnVariable
+    ret = neonOpen(hostname + ' ' + hostport)
+
+    for testIdx in xrange(50):
 
       width = random.randint(0, len(vsubs)-1)
       neonOp('vsub' + vsubs[width])
