@@ -30,4 +30,3 @@ v%.o: $(SRCDIR)/neonExecute_INSTR.S
 clean:
 	rm -f *.out
 	rm -f *.o
-	rm -f auto_neon_header.h
