@@ -38,3 +38,6 @@ s# Object files
 # DPA workflow files
 *.dmac
 *.dscr
+
+# Python bytecode files
+*.pyc
