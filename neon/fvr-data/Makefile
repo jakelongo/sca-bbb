@@ -1,28 +1,31 @@
-SOURCES ?= socketNeon.c trigger.c
+SRCDIR  := src
+SRCS    := $(wildcard $(SRCDIR)/*.c)
 
 # Universal operations
-OBJS_U   ?= $(addsuffix _u64.o , vand veor)
+OBJS  := $(addsuffix _u64.o , vand veor)
 
 # Signed operations
-OBJS_I8  ?= $(addsuffix _i8.o , vmul vadd vsub)
-OBJS_I16 ?= $(addsuffix _i16.o, vmul vadd vsub)
-OBJS_I32 ?= $(addsuffix _i32.o, vmul vadd vsub)
-OBJS_I64 ?= $(addsuffix _i64.o,      vadd vsub)
-
-OBJS ?= $(OBJS_U) $(OBJS_I8) $(OBJS_I16) $(OBJS_I32) $(OBJS_I64)
-
+OBJS  += $(addsuffix _i8.o , vmul vadd vsub)
+OBJS  += $(addsuffix _i16.o, vmul vadd vsub)
+OBJS  += $(addsuffix _i32.o, vmul vadd vsub)
+OBJS  += $(addsuffix _i64.o,      vadd vsub)
 
 .PHONY: all clean
+CFLAGS   := -mfpu=neon -std=c99
+DBGFLAGS := -DDEBUG
+GDBFLAGS := $(DBGFLAGS) -g
+
+ASFLAGS  := -mfpu=neon
 
 all: $(OBJS)
-	gcc -mfpu=neon -std=c99 $(SOURCES) $(OBJS)         -o    nodebug.out
-	gcc -mfpu=neon -std=c99 $(SOURCES) $(OBJS) -DDEBUG -o    debug.out
-	gcc -mfpu=neon -std=c99 $(SOURCES) $(OBJS) -DDEBUG -g -o gdb_debug.out
+	$(CC) $(CFLAGS) $(SRCS) -I$(SRCDIR) $(OBJS)             -o nodebug.out
+	$(CC) $(CFLAGS) $(SRCS) -I$(SRCDIR) $(OBJS) $(DBGFLAGS) -o debug.out
+	$(CC) $(CFLAGS) $(SRCS) -I$(SRCDIR) $(OBJS) $(GDBFLAGS) -o gdb_debug.out
 
-v%.o: neonExecute_INSTR.S
+v%.o: $(SRCDIR)/neonExecute_INSTR.S
 	$(eval INSTR := $(shell echo $@ | sed -e "s/\(.*\)_.*/\1/g"))
 	$(eval WORD  := $(shell echo $@ | sed -e "s/.*_\(.*\)\.o/\1/g"))
-	gcc -mfpu=neon $< -D INSTR=$(INSTR) -D WORD=$(WORD) -c -g -o $@
+	$(CC) $(ASFLAGS) $< -D INSTR=$(INSTR) -D WORD=$(WORD) -c -o $@
 
 clean:
 	rm -f *.out

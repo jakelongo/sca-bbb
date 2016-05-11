@@ -206,12 +206,6 @@ def vec2payload(vec):
   payload = ''.join([''.join(reversed([x[i:i+2] for i in range(0, len(x), 2)])) for x in vecstrs])
   return payload
 
-def addSigned(a,b):
-  ia = ctypes.c_int32(a)
-  ib = ctypes.c_int32(b)
-  ic = ctypes.c_int32(ia.value+ib.value)
-  return (ctypes.c_uint32(ic.value)).value
-
 def bits2signed(a,bits):
   return (((a)+ 2**(bits-1)) % 2**bits - 2**(bits-1)) & (2**bits-1)
 
@@ -235,13 +229,47 @@ def sub_vector(bits):
 
   return (strs, payl)
 
+def mul_vector(bits):
+  a = [random.getrandbits(bits) for i in range(64/bits)]
+  b = [random.getrandbits(bits) for i in range(64/bits)]
+  c = [bits2signed(x*y,bits) for x, y in zip(a, b)]
 
+  strs = [vec2str(x)     for x in [a, b, c]]
+  payl = [vec2payload(x) for x in [a, b, c]]
 
-vmuls = ['i8', 'i16', 'i32']
-vadds = ['i8', 'i16', 'i32', 'i64']
-vsubs = ['i8', 'i16', 'i32', 'i64']
-veors = ['u64']
-vands = ['u64']
+  return (strs, payl)
+
+def and_vector(bits):
+  a = [random.getrandbits(bits) for i in range(64/bits)]
+  b = [random.getrandbits(bits) for i in range(64/bits)]
+  c = [x&y for x, y in zip(a, b)]
+
+  strs = [vec2str(x)     for x in [a, b, c]]
+  payl = [vec2payload(x) for x in [a, b, c]]
+
+  return (strs, payl)
+
+def eor_vector(bits):
+  a = [random.getrandbits(bits) for i in range(64/bits)]
+  b = [random.getrandbits(bits) for i in range(64/bits)]
+  c = [x^y for x, y in zip(a, b)]
+
+  strs = [vec2str(x)     for x in [a, b, c]]
+  payl = [vec2payload(x) for x in [a, b, c]]
+
+  return (strs, payl)
+
+vmul_word = ['i8', 'i16', 'i32']
+vadd_word = ['i8', 'i16', 'i32', 'i64']
+vsub_word = ['i8', 'i16', 'i32', 'i64']
+veor_word = ['u64']
+vand_word = ['u64']
+
+vadd_test = ['vadd', vadd_word, add_vector]
+vsub_test = ['vsub', vsub_word, sub_vector]
+vmul_test = ['vmul', vmul_word, mul_vector]
+veor_test = ['veor', veor_word, eor_vector]
+vand_test = ['vand', vand_word, and_vector]
 
 class test_neon(unittest.TestCase):
 
@@ -304,16 +332,19 @@ class test_neon(unittest.TestCase):
     self.assertTrue(ret)
 
 
-  def test_neon_vadd(self):
+  def test_neon_vsub(self):
     global returnVariable
-    ret = neonOpen(hostname + ' ' + hostport)
+    global vadd_test
+
+    instr = vadd_test
+    ret   = neonOpen(hostname + ' ' + hostport)
 
     for testIdx in xrange(50):
 
-      width = random.randint(0, len(vadds)-1)
-      neonOp('vadd' + vadds[width])
+      width = random.randint(0, len(instr[1])-1)
+      neonOp(instr[0] + instr[1][width])
 
-      (vecstrs, vecpay) = add_vector(int((vadds[width])[1:]))
+      (vecstrs, vecpay) = (instr[2])(int((instr[1][width])[1:]))
 
       neonSet('3 ' + vecpay[0])
       neonSet('4 ' + vecpay[1])
@@ -327,14 +358,17 @@ class test_neon(unittest.TestCase):
 
   def test_neon_vsub(self):
     global returnVariable
-    ret = neonOpen(hostname + ' ' + hostport)
+    global vsub_test
+
+    instr = vsub_test
+    ret   = neonOpen(hostname + ' ' + hostport)
 
     for testIdx in xrange(50):
 
-      width = random.randint(0, len(vsubs)-1)
-      neonOp('vsub' + vsubs[width])
+      width = random.randint(0, len(instr[1])-1)
+      neonOp(instr[0] + instr[1][width])
 
-      (vecstrs, vecpay) = sub_vector(int((vsubs[width])[1:]))
+      (vecstrs, vecpay) = (instr[2])(int((instr[1][width])[1:]))
 
       neonSet('3 ' + vecpay[0])
       neonSet('4 ' + vecpay[1])
@@ -348,14 +382,66 @@ class test_neon(unittest.TestCase):
 
   def test_neon_vmul(self):
     global returnVariable
-    ret = neonOpen(hostname + ' ' + hostport)
+    global vmul_test
+
+    instr = vmul_test
+    ret   = neonOpen(hostname + ' ' + hostport)
 
     for testIdx in xrange(50):
 
-      width = random.randint(0, len(vsubs)-1)
-      neonOp('vsub' + vsubs[width])
+      width = random.randint(0, len(instr[1])-1)
+      neonOp(instr[0] + instr[1][width])
 
-      (vecstrs, vecpay) = sub_vector(int((vsubs[width])[1:]))
+      (vecstrs, vecpay) = (instr[2])(int((instr[1][width])[1:]))
+
+      neonSet('3 ' + vecpay[0])
+      neonSet('4 ' + vecpay[1])
+
+      neonExec('')
+      neonGet('2')
+
+      self.assertEqual(returnVariable, vecpay[2])
+
+    neonClose('')
+
+  def test_neon_veor(self):
+    global returnVariable
+    global veor_test
+
+    instr = veor_test
+    ret   = neonOpen(hostname + ' ' + hostport)
+
+    for testIdx in xrange(50):
+
+      width = random.randint(0, len(instr[1])-1)
+      neonOp(instr[0] + instr[1][width])
+
+      (vecstrs, vecpay) = (instr[2])(int((instr[1][width])[1:]))
+
+      neonSet('3 ' + vecpay[0])
+      neonSet('4 ' + vecpay[1])
+
+      neonExec('')
+      neonGet('2')
+
+      self.assertEqual(returnVariable, vecpay[2])
+
+    neonClose('')
+
+
+  def test_neon_vand(self):
+    global returnVariable
+    global vand_test
+
+    instr = vand_test
+    ret   = neonOpen(hostname + ' ' + hostport)
+
+    for testIdx in xrange(50):
+
+      width = random.randint(0, len(instr[1])-1)
+      neonOp(instr[0] + instr[1][width])
+
+      (vecstrs, vecpay) = (instr[2])(int((instr[1][width])[1:]))
 
       neonSet('3 ' + vecpay[0])
       neonSet('4 ' + vecpay[1])
