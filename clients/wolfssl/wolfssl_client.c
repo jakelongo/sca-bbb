@@ -308,7 +308,7 @@ void commandHandler(int sessionfd)
 
   }
 
-  trigger_close();
+  trigger_unmap();
   close(sessionfd);
 
 }

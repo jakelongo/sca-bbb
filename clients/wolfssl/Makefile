@@ -6,7 +6,12 @@ OBJS   += $(patsubst %.S,%.o,$(wildcard *.S))
 
 CFLAGS   := -std=c99
 CPPFLAGS :=
+
 ASFLAGS  :=
+
+LDFLAGS  := -L/usr/local/lib
+LDLIBS   := -lwolfssl
+
 DBGFLAGS := -g
 
 CC  ?= gcc
