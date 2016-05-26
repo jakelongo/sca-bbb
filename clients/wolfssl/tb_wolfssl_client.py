@@ -9,6 +9,7 @@ import binascii
 import unittest
 import random
 import ctypes
+import copy
 import sys
 
 import aesLib
@@ -207,6 +208,18 @@ def neon_encrypt(args):
 
   return True
 
+def cbcWrapper(key, iv, pt):
+
+  chain = copy.deepcopy(iv)
+  ct    = []
+
+  for idx in xrange(0, len(pt), 16):
+    inp    = aesLib.AddRoundKey(chain, pt[idx:idx+16])
+    chain  = aesLib.AESencrypt(key, inp)
+    ct     = ct + chain
+
+  return ct
+
 class test_neon(unittest.TestCase):
 
 
@@ -261,17 +274,21 @@ class test_neon(unittest.TestCase):
   def test_neonexecBuffer(self):
     global returnVariable
     ret = neon_open(hostname + ' ' + hostport)
-    ret = ret and neon_pt('DEADBEEFDEADBEEFDEADBEEFDEADBEEF')
+
+    ptState = [random.getrandbits(8) for i in xrange(1024)]
+    ptStr   = aesLib.state2str(ptState)
+
+    ret = ret and neon_pt(ptStr)
     ret = ret and neon_key('DEADC0DEDEADC0DEDEADC0DEDEADC0DE')
-    ret = ret and neon_iv('00000000000000000000000000000000')
+    ret = ret and neon_iv( 'ABCDEF0123456789ABCDEF0123456789')
     ret = ret and neon_encrypt('')
     ret = ret and neon_ct('')
     ret = ret and neon_close('')
 
-    pt  = aesLib.str2state('DEADBEEFDEADBEEFDEADBEEFDEADBEEF')
+    iv  = aesLib.str2state('ABCDEF0123456789ABCDEF0123456789')
     key = aesLib.str2state('DEADC0DEDEADC0DEDEADC0DEDEADC0DE')
-    ct  = aesLib.AESencrypt(key, pt)
 
+    ct  = cbcWrapper(key, iv, ptState)
     ctStr = aesLib.state2str(ct)
 
     self.assertEqual(returnVariable, ctStr)
