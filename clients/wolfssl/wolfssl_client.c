@@ -317,7 +317,7 @@ int main(int argc, char *argv[])
 {
   /* Socket Setup */
   // default socket number
-  int socketNumber = 5000;
+  int socketNumber = 8081;
 
   if (argc > 1){
     socketNumber = atoi(argv[1]);
