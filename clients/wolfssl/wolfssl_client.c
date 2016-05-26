@@ -39,7 +39,7 @@ typedef union bitpacketUnion {
 // Up to 64KB
 #define DATABUFFSIZE 4096*16*sizeof(uint8_t)
 
-// #define DEBUG
+#define DEBUG
 
 // Dreaded globals!
 volatile int listenfd  = 0;
@@ -83,7 +83,7 @@ int32_t getData(int sessionfd, char* dest, uint32_t maxBuffer)
   #endif /* DEBUG */
 
   if (streamLength.data > maxBuffer) {
-    printf("Payload length is greater than max buffer %d\n", streamLength.data);
+    printf("Payload length is greater than max buffer, Received: %d; Max: %d\n", streamLength.data, maxBuffer);
     return -1;
   }
 
@@ -278,6 +278,8 @@ void commandHandler(int sessionfd)
         break;
 
       case 'e':
+
+        aesEncrypt(aesCtx, keyBuffer, ptBuffer, ctBuffer, ivBuffer, keySize, activeBuffer);
 
         // Encrypt!
         #ifdef DEBUG

@@ -104,13 +104,8 @@ def neon_ct(args):
     print "Target not open!"
     return False
 
-  splitArgs = args.split(' ')
-
   # write register function
   targetObject.write('r')
-
-  # Set register bank
-  targetObject.write(chr(int(splitArgs[0])))
   targetObject.flush()
 
   # get payload length
@@ -139,10 +134,10 @@ def neon_pt(args):
   targetObject.write('m')
 
   # Send payload length
-  targetObject.write(binascii.unhexlify("%08X" % (len(args)))[::-1])
+  targetObject.write(binascii.unhexlify("%08X" % (len(args)/2))[::-1])
 
   # set the string
-  targetObject.write(args)
+  targetObject.write(binascii.unhexlify(args))
 
   # send EO transmission character
   targetObject.write('\n')
@@ -163,10 +158,10 @@ def neon_iv(args):
   targetObject.write('i')
 
   # Send payload length
-  targetObject.write(binascii.unhexlify("%08X" % (len(args)))[::-1])
+  targetObject.write(binascii.unhexlify("%08X" % (len(args)/2))[::-1])
 
   # set the string
-  targetObject.write(args)
+  targetObject.write(binascii.unhexlify(args))
 
   # send EO transmission character
   targetObject.write('\n')
@@ -186,10 +181,10 @@ def neon_key(args):
   targetObject.write('k')
 
   # Send payload length
-  targetObject.write(binascii.unhexlify("%08X" % (len(args)))[::-1])
+  targetObject.write(binascii.unhexlify("%08X" % (len(args)/2))[::-1])
 
   # set the string
-  targetObject.write(args)
+  targetObject.write(binascii.unhexlify(args))
 
   # send EO transmission character
   targetObject.write('\n')
@@ -241,7 +236,7 @@ class test_neon(unittest.TestCase):
   def test_neonread(self):
     global returnVariable
     ret = neon_open(hostname + ' ' + hostport)
-    ret = ret and neon_ct()
+    ret = ret and neon_ct('')
     ret = ret and neon_close('')
     self.assertTrue(ret)
 
@@ -251,8 +246,8 @@ class test_neon(unittest.TestCase):
     ret = ret and neon_pt('DEADBEEFDEADBEEFDEADBEEFDEADBEEF')
     ret = ret and neon_key('DEADC0DEDEADC0DEDEADC0DEDEADC0DE')
     ret = ret and neon_iv('00000000000000000000000000000000')
-    ret = ret and neon_encrypt()
-    ret = ret and neon_ct()
+    ret = ret and neon_encrypt('')
+    ret = ret and neon_ct('')
     ret = ret and neon_close('')
 
     pt  = aesLib.str2state('DEADBEEFDEADBEEFDEADBEEFDEADBEEF')
