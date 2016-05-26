@@ -291,7 +291,7 @@ void commandHandler(int sessionfd)
 
       case 'e':
 
-        aesEncrypt(aesCtx, keyBuffer, ptBuffer, ctBuffer, ivBuffer, keySize, activeBuffer);
+        aesEncrypt(&aesCtx, keyBuffer, ptBuffer, ctBuffer, ivBuffer, keySize, activeBuffer);
 
         // Encrypt!
         #ifdef DEBUG
