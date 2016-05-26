@@ -4,7 +4,7 @@ OBJS   += $(patsubst %.S,%.o,$(wildcard *.S))
 
 .PHONY: all clean
 
-CFLAGS   :=
+CFLAGS   := -std=c99
 CPPFLAGS :=
 ASFLAGS  :=
 DBGFLAGS := -g
