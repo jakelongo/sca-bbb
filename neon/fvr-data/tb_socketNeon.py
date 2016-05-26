@@ -457,6 +457,14 @@ class test_neon(unittest.TestCase):
     neonClose('')
 
 if __name__ == '__main__':
-  unittest.main(verbosity=2)
+  # unittest.main(verbosity=2)
+  a = 0x100000001
+  b = 0x100000002
+
+  c = 0xF00000011
+  d = 0xF00000022
+
+  print (format(bits2signed(a+c,32), 'X')).zfill(8)
+  print (format(bits2signed(b+d,32), 'X')).zfill(8)
 
 
