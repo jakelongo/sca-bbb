@@ -15,16 +15,16 @@ CXX ?= g++
 all: wolfssl-client
 
 wolfssl-client: $(OBJS)
-  $(CC) $(LDFLAGS) $(LDLIBS) -o $@ $^
+	$(CC) $(LDFLAGS) $(LDLIBS) -o $@ $^
 
 %.o: %.S
-  $(CC)  -o $@ $(CFLAGS) $(ASFLAGS) -c $^
+	$(CC)  -o $@ $(CFLAGS) $(ASFLAGS) -c $^
 
 %.o: %.c
-  $(CC)  -o $@ $(CFLAGS)   -c $^
+	$(CC)  -o $@ $(CFLAGS)   -c $^
 
 %.o: %.cpp
-  $(CXX) -o $@ $(CPPFLAGS) -c $^
+	$(CXX) -o $@ $(CPPFLAGS) -c $^
 
 clean:
-  rm -f $(OBJS)
+	rm -f $(OBJS)
