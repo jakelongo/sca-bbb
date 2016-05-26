@@ -237,6 +237,10 @@ void commandHandler(int sessionfd)
           }
 
         #ifdef DEBUG
+        printMemory(keySize, keyBuffer);
+        #endif /* DEBUG */
+
+        #ifdef DEBUG
         printf("Key Size @ %d\n", keySize);
         #endif /* DEBUG */
 
@@ -248,6 +252,10 @@ void commandHandler(int sessionfd)
       case 'i':
 
         scratchVariable = getData(sessionfd, ivBuffer, 16);
+
+        #ifdef DEBUG
+        printMemory(16, ivBuffer);
+        #endif /* DEBUG */
 
         // if there was an error while receiving the payload
         if (scratchVariable < 0) {
@@ -268,6 +276,10 @@ void commandHandler(int sessionfd)
           activeBuffer = (uint32_t) scratchVariable;
         }
 
+        #ifdef DEBUG
+        printMemory(16, ptBuffer);
+        #endif /* DEBUG */
+
         break;
 
       // Read out the ciphertext buffer
@@ -284,6 +296,7 @@ void commandHandler(int sessionfd)
         // Encrypt!
         #ifdef DEBUG
           printf("Performing encryption...\n");
+          printMemory(16, ctBuffer);
         #endif /* DEBUG */
 
 
