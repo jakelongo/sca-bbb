@@ -11,6 +11,8 @@ import random
 import ctypes
 import sys
 
+import aesLib
+
 
 targetObject   = None
 returnVariable = None
@@ -218,9 +220,9 @@ class test_neon(unittest.TestCase):
     ret = ret and neon_close('')
     self.assertTrue(ret)
 
-  def test_neonpt(self):
+  def test_neonkey(self):
     ret = neon_open(hostname + ' ' + hostport)
-    ret = ret and neon_pt('DEADBEEFDEADBEEFDEADBEEFDEADBEEF')
+    ret = ret and neon_key('DEADBEEFDEADBEEFDEADBEEFDEADBEEF')
     ret = ret and neon_close('')
     self.assertTrue(ret)
 
@@ -241,24 +243,25 @@ class test_neon(unittest.TestCase):
     ret = neon_open(hostname + ' ' + hostport)
     ret = ret and neon_ct()
     ret = ret and neon_close('')
-    self.assertEqual(ret)
+    self.assertTrue(ret)
 
   def test_neonexec(self):
     global returnVariable
-    (vecstrs, vecpay) = add_vector(32)
-
     ret = neon_open(hostname + ' ' + hostport)
-
-    ret = ret and neonSet('3 ' + vecpay[0])
-    ret = ret and neonSet('4 ' + vecpay[1])
-    ret = ret and neonOp('vaddi32')
-    ret = ret and neonExec('')
-    ret = ret and neonGet('2')
+    ret = ret and neon_pt('DEADBEEFDEADBEEFDEADBEEFDEADBEEF')
+    ret = ret and neon_key('DEADC0DEDEADC0DEDEADC0DEDEADC0DE')
+    ret = ret and neon_iv('00000000000000000000000000000000')
+    ret = ret and neon_encrypt()
+    ret = ret and neon_ct()
     ret = ret and neon_close('')
 
-    self.assertEqual(returnVariable, vecpay[2])
+    pt  = aesLib.str2state('DEADBEEFDEADBEEFDEADBEEFDEADBEEF')
+    key = aesLib.str2state('DEADC0DEDEADC0DEDEADC0DEDEADC0DE')
+    ct  = aesLib.AESencrypt(key, pt)
 
+    ctStr = aesLib.state2str(ct)
 
+    self.assertEqual(returnVariable, ctStr)
 
 if __name__ == '__main__':
   unittest.main(verbosity=2)
