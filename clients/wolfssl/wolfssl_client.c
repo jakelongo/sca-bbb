@@ -205,7 +205,7 @@ void commandHandler(int sessionfd)
     read(sessionfd, &cmdIdentifier, 1);
 
     #ifdef DEBUG
-    printf("CMD=%c \n", cmdIdentifier);
+    printf("\nCMD=%c \n", cmdIdentifier);
     #endif /* DEBUG */
 
     switch(cmdIdentifier) {
@@ -238,6 +238,7 @@ void commandHandler(int sessionfd)
 
         #ifdef DEBUG
         printMemory(keySize, keyBuffer);
+        printf("\n");
         #endif /* DEBUG */
 
         #ifdef DEBUG
@@ -255,6 +256,7 @@ void commandHandler(int sessionfd)
 
         #ifdef DEBUG
         printMemory(16, ivBuffer);
+        printf("\n");
         #endif /* DEBUG */
 
         // if there was an error while receiving the payload
@@ -278,6 +280,7 @@ void commandHandler(int sessionfd)
 
         #ifdef DEBUG
         printMemory(16, ptBuffer);
+        printf("\n");
         #endif /* DEBUG */
 
         break;
@@ -297,6 +300,7 @@ void commandHandler(int sessionfd)
         #ifdef DEBUG
           printf("Performing encryption...\n");
           printMemory(16, ctBuffer);
+          printf("\n");
         #endif /* DEBUG */
 
 

@@ -258,6 +258,25 @@ class test_neon(unittest.TestCase):
 
     self.assertEqual(returnVariable, ctStr)
 
+  def test_neonexecBuffer(self):
+    global returnVariable
+    ret = neon_open(hostname + ' ' + hostport)
+    ret = ret and neon_pt('DEADBEEFDEADBEEFDEADBEEFDEADBEEF')
+    ret = ret and neon_key('DEADC0DEDEADC0DEDEADC0DEDEADC0DE')
+    ret = ret and neon_iv('00000000000000000000000000000000')
+    ret = ret and neon_encrypt('')
+    ret = ret and neon_ct('')
+    ret = ret and neon_close('')
+
+    pt  = aesLib.str2state('DEADBEEFDEADBEEFDEADBEEFDEADBEEF')
+    key = aesLib.str2state('DEADC0DEDEADC0DEDEADC0DEDEADC0DE')
+    ct  = aesLib.AESencrypt(key, pt)
+
+    ctStr = aesLib.state2str(ct)
+
+    self.assertEqual(returnVariable, ctStr)
+
+
 if __name__ == '__main__':
   unittest.main(verbosity=2)
 
