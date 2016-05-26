@@ -49,7 +49,7 @@ volatile int sessionfd = 0;
 void bail(void) {
   close(sessionfd);
   close(listenfd);
-  trigger_close();
+  trigger_unmap();
 }
 
 
@@ -189,7 +189,7 @@ void commandHandler(int sessionfd)
   printf("Initialising GPIO\n");
   #endif /* DEBUG */
 
-  trigger_init();
+  trigger_map();
   trigger_setup();
 
   // ensure the buffer is considered 'empty' at the start
@@ -217,27 +217,29 @@ void commandHandler(int sessionfd)
 
         // if there was an error while receiving the payload
         if (scratchVariable < 0) {
+          switch(scratchVariable) {
+            case 16:
+              keySize = 16;
+              break;
 
-          case 16:
-            keySize = 16;
-            break;
+            case 24:
+              keySize = 24;
+              break;
 
-          case 24:
-            keySize = 24;
-            break;
+            case 32:
+              keySize = 32;
+              break;
 
-          case 32:
-            keySize = 32;
-            break;
+            default:
+              printf("Error, key received is of an incorrect length: %d\n", scratchVariable);
+              keySize = 16;
+              break;
+          }
 
-          default:
-            printf("Error, key received is of an incorrect length: %d\n", scratchVariable);
-            keySize = 16;
-            break;
+        #ifdef DEBUG
+        printf("Key Size @ %d\n", keySize);
+        #endif /* DEBUG */
 
-          #ifdef DEBUG
-          printf("Key Size @ %d\n", keySize);
-          #endif /* DEBUG */
         }
 
         break;
@@ -261,7 +263,7 @@ void commandHandler(int sessionfd)
 
         // if there was an error while receiving the payload
         if (scratchVariable < 0) {
-          printf("Error in receiving payload!")
+          printf("Error in receiving payload!");
         } else {
           activeBuffer = (uint32_t) scratchVariable;
         }
