@@ -55,9 +55,10 @@ patch -p0 < wolfssl.patch
 
 Build wolfSSL:
 ```bash
+./autogen.sh
 ./configure CPPFLAGS=[defs] LDFLAGS=[lib]
 make
-make check
+make check # This will fail if run without root and configured with HW triggers
 sudo make install
 ```
 
